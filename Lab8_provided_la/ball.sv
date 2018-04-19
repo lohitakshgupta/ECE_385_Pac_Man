@@ -177,6 +177,7 @@ module  ball ( input         Clk,                // 50 MHz clock
 module  ball ( input         Clk,                // 50 MHz clock
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
+									  is_wall,
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                input [7:0]   key,               // The currently pressed keys
                output logic  is_ball             // Whether current pixel belongs to ball or background
@@ -190,7 +191,7 @@ module  ball ( input         Clk,                // 50 MHz clock
     parameter [9:0] Ball_Y_Max=479;     // Bottommost point on the Y axis
     parameter [9:0] Ball_X_Step=1;      // Step size on the X axis
     parameter [9:0] Ball_Y_Step=1;      // Step size on the Y axis
-    parameter [9:0] Ball_Size=4;        // Ball size
+    parameter [9:0] Ball_Size= 16;        // Ball size
     
      // Invert the values of the steps
      logic [9:0] Ball_X_Step_inv, Ball_Y_Step_inv;
@@ -330,7 +331,7 @@ module  ball ( input         Clk,                // 50 MHz clock
     **************************************************************************************/
         
         // Compute whether the pixel corresponds to ball or background
-       if ( ( DistX*DistX + DistY*DistY) <= (Size * Size) ) 
+       if ( (( DistX*DistX + DistY*DistY) <= (Size * Size)) && (is_wall == 1'b0)) 
             is_ball = 1'b1;
         else
             is_ball = 1'b0;
@@ -341,4 +342,126 @@ module  ball ( input         Clk,                // 50 MHz clock
         
    end
     
+endmodule
+
+module  wall ( input Clk,
+					input [9:0]   DrawX, DrawY,       // Current pixel coordinates
+               output logic  is_wall             // Whether current pixel belongs to ball or background
+              );
+				  
+		
+		//declaring maze
+		reg [19:0] wall[0:14];
+		
+		//instantiating maze
+		always_ff @(posedge Clk) begin
+		
+			for(int i = 0; i < 20; i++) begin
+				wall[0][i] <= 1'b1;
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 0 || i == 5 || i == 14 || i == 19) begin
+					wall[1][i] <= 1'b1;
+				end
+				else begin
+					wall[1][i] <= 1'b0;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 1 || i == 4 || i == 6 || i == 13 || i == 15  || i == 18) begin
+					wall[2][i] <= 1'b0;
+				end
+				else begin
+					wall[2][i] <= 1'b1;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 0 || i == 2 || i == 17 || i == 19) begin
+					wall[3][i] <= 1'b1;
+				end
+				else begin
+					wall[3][i] <= 1'b0;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 1 || i == 3 || i == 6 || i == 9 || i == 10 || i == 13 || i == 16 || i == 18) begin
+					wall[4][i] <= 1'b0;
+				end
+				else begin
+					wall[4][i] <= 1'b1;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 0 || i == 7 || i == 12 || i == 19) begin
+					wall[5][i] <= 1'b1;
+				end
+				else begin
+					wall[5][i] <= 1'b0;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 1 || i == 3 || i == 6 || i == 13 || i == 16 || i == 18) begin
+					wall[6][i] <= 1'b0;
+				end
+				else begin
+					wall[6][i] <= 1'b1;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 0 || i == 2 || i == 17 || i == 19) begin
+					wall[7][i] <= 1'b1;
+				end
+				else begin
+					wall[7][i] <= 1'b0;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 1 || i == 4 || i == 6 || i == 13 || i == 15 || i == 18) begin
+					wall[8][i] <= 1'b0;
+				end
+				else begin
+					wall[8][i] <= 1'b1;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				if(i == 0 || i == 5 || i == 14 || i == 19) begin
+					wall[9][i] <= 1'b1;
+				end
+				else begin
+					wall[9][i] <= 1'b0;
+				end
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				wall[10][i] <= 1'b1;
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				wall[11][i] <= 1'b1;
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				wall[12][i] <= 1'b1;
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				wall[13][i] <= 1'b1;
+			end
+			
+			for(int i = 0; i < 20; i++) begin
+				wall[14][i] <= 1'b1;
+			end
+		end
+			
+	assign is_wall = wall[DrawY>>5][DrawX>>5]; //using floor and block size of 32
+	
 endmodule
