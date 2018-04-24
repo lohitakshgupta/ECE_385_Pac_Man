@@ -92,7 +92,6 @@ module  pac_man ( input         Clk,                // 50 MHz clock
     // You need to modify always_comb block.
     always_comb
     begin
-		pac_man_cut_read_address = 10'b0000000000;
         // Update the ball's position with its motion; by default, continue moving in same direction
         Ball_X_Pos_in = Ball_X_Pos + Ball_X_Motion;
         Ball_Y_Pos_in = Ball_Y_Pos + Ball_Y_Motion;
@@ -173,13 +172,13 @@ module  pac_man ( input         Clk,                // 50 MHz clock
     **************************************************************************************/
         
         // Compute whether the pixel corresponds to ball or background
-       //if ( (( DistX*DistX + DistY*DistY) <= (Size * Size)) && (is_wall == 1'b0))begin
-		  if( (0 <= DistX) & (DistX <= (2*Size)) & (0 <= DistY) & (DistY <= (2*Size)))begin
+       //if ( (( (DistX + (2*Size))*(DistY + (2*Size))) <= (4 * Size * Size)))begin
+		 if( (0 <= DistX) & (DistX <= (2*Size)) & (0 <= DistY) & (DistY <= (2*Size)))begin
 				pac_man_cut_read_address = DistY*(2*Size) + DistX;
             is_ball = 1'b1;
 			end
         else begin
-				
+				pac_man_cut_read_address = 10'b0000000000;
             is_ball = 1'b0;
         end
         /* The ball's (pixelated) circle is generated using the standard circle formula.  Note that while 
