@@ -17,8 +17,10 @@
 module  color_mapper ( input              is_ball, is_wall,           // Whether current pixel belongs to ball 
                                                               //   or background (computed in ball.sv)
                        input        [9:0] DrawX, DrawY,       // Current pixel coordinates
+							  input logic	[7:0] pac_man_cut_data_out_R, pac_man_cut_data_out_G, pac_man_cut_data_out_B,
                        output logic [7:0] VGA_R, VGA_G, VGA_B // VGA RGB output
-                     );
+							 
+							);
     
     logic [7:0] Red, Green, Blue;
     
@@ -33,9 +35,9 @@ module  color_mapper ( input              is_ball, is_wall,           // Whether
         if (is_ball == 1'b1) 
         begin
             // Yellow ball
-            Red = 8'hff;
-            Green = 8'hff;
-            Blue = 8'h00;
+            Red = pac_man_cut_data_out_R;
+            Green = pac_man_cut_data_out_G;
+            Blue = pac_man_cut_data_out_B;
         end
         else if((is_wall == 1'b1) && (DrawY < 352))
 		  begin

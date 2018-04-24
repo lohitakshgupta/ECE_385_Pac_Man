@@ -105,6 +105,9 @@ module lab8( input               CLOCK_50,
                              .otg_hpi_reset_export(hpi_reset)
     );
     
+	 logic [23:0] pac_man_cut_data_out;
+	 logic [9:0]  pac_man_cut_read_address;
+	 
     // Use PLL to generate the 25MHZ VGA_CLK.
     // You will have to generate it on your own in simulation.
     vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
@@ -114,13 +117,17 @@ module lab8( input               CLOCK_50,
                                            .VGA_SYNC_N(VGA_SYNC_N), .DrawX(DrawX), .DrawY(DrawY));
     
     // Which signal should be frame_clk?
-    ball ball_instance(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .is_ball(is_ball), .is_wall(is_wall));
+    pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall));
     
 	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall));
 	 
     color_mapper color_instance(.is_ball(is_ball), .is_wall(is_wall), .DrawX(DrawX), .DrawY(DrawY), 
-											.VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B));
+											.VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .pac_man_cut_data_out_R(pac_man_cut_data_out[23:16]), .pac_man_cut_data_out_G(pac_man_cut_data_out[15:8]), .pac_man_cut_data_out_B(pac_man_cut_data_out[7:0]));
+											
+	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address),.pac_man_cut_data_out(pac_man_cut_data_out));
     
+
+	 
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
     HexDriver hex_inst_1 (keycode[7:4], HEX1);
