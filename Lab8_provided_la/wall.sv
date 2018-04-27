@@ -1,6 +1,6 @@
 module  wall ( input Clk,
 					input [9:0]   DrawX, DrawY,       // Current pixel coordinates
-               output logic  is_wall             // Whether current pixel belongs to ball or background
+               output logic  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left // Whether current pixel belongs to ball or background
               );
 				  
 		
@@ -117,5 +117,10 @@ module  wall ( input Clk,
 		end
 			
 	assign is_wall = wall[DrawY>>5][DrawX>>5]; //using floor and block size of 32
+	assign is_wall_up = wall[(DrawY>>5)-1][DrawX>>5];
+	assign is_wall_down = wall[(DrawY>>5)+1][DrawX>>5];
+	assign is_wall_right = wall[DrawY>>5][(DrawX>>5)+1];
+	assign is_wall_left = wall[DrawY>>5][(DrawX>>5)-1];
+
 	
 endmodule

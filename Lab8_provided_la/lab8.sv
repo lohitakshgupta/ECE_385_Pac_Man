@@ -57,7 +57,8 @@ module lab8( input               CLOCK_50,
     logic [1:0] hpi_addr;
     logic [15:0] hpi_data_in, hpi_data_out;
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
-	 logic is_ball, is_wall;
+	 logic is_ball, is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left;
+	 logic is_red_evil, is_green_evil, is_blue_evil;
 	 logic [9:0] DrawX, DrawY;
     
     // Interface between NIOS II and EZ-OTG chip
@@ -105,8 +106,8 @@ module lab8( input               CLOCK_50,
                              .otg_hpi_reset_export(hpi_reset)
     );
     
-	 logic [23:0] pac_man_cut_data_out;
-	 logic [9:0]  pac_man_cut_read_address;
+	 logic [23:0] pac_man_cut_data_out, red_evil_data_out, green_evil_data_out, blue_evil_data_out;
+	 logic [9:0]  pac_man_cut_read_address, red_evil_read_address, green_evil_read_address, blue_evil_read_address;
 	 
     // Use PLL to generate the 25MHZ VGA_CLK.
     // You will have to generate it on your own in simulation.
@@ -117,17 +118,32 @@ module lab8( input               CLOCK_50,
                                            .VGA_SYNC_N(VGA_SYNC_N), .DrawX(DrawX), .DrawY(DrawY));
     
     // Which signal should be frame_clk?
-    pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall));
+    pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall),
+							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left));
     
-	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall));
-	 
-    color_mapper color_instance(.is_ball(is_ball), .is_wall(is_wall), .DrawX(DrawX), .DrawY(DrawY), 
-											.VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B), .pac_man_cut_data_out_R(pac_man_cut_data_out[23:16]), .pac_man_cut_data_out_G(pac_man_cut_data_out[15:8]), .pac_man_cut_data_out_B(pac_man_cut_data_out[7:0]));
-											
-	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address),.pac_man_cut_data_out(pac_man_cut_data_out));
-    
+	 red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), .is_wall(is_wall));
 
+	 green_evil_move green_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .green_evil_read_address(green_evil_read_address), .is_green_evil(is_green_evil), .is_wall(is_wall));
 	 
+	 blue_evil_move blue_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .blue_evil_read_address(blue_evil_read_address), .is_blue_evil(is_blue_evil), .is_wall(is_wall));
+	 
+	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall), .is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left));
+	 
+    color_mapper color_instance(.is_ball(is_ball), .is_wall(is_wall), .is_red_evil(is_red_evil), .is_green_evil(is_green_evil), .is_blue_evil(is_blue_evil), .DrawX(DrawX), .DrawY(DrawY), 
+											.VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B),
+											.pac_man_cut_data_out_R(pac_man_cut_data_out[23:16]), .pac_man_cut_data_out_G(pac_man_cut_data_out[15:8]), .pac_man_cut_data_out_B(pac_man_cut_data_out[7:0]),	
+											.red_evil_data_out_R(red_evil_data_out[23:16]), .red_evil_data_out_G(red_evil_data_out[15:8]), .red_evil_data_out_B(red_evil_data_out[7:0]),
+											.green_evil_data_out_R(green_evil_data_out[23:16]), .green_evil_data_out_G(green_evil_data_out[15:8]), .green_evil_data_out_B(green_evil_data_out[7:0]),
+											.blue_evil_data_out_R(blue_evil_data_out[23:16]), .blue_evil_data_out_G(blue_evil_data_out[15:8]), .blue_evil_data_out_B(blue_evil_data_out[7:0]));
+											
+	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out));
+	 
+ 	 red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
+
+	 green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));
+		 
+	 blue_evil blue_evil_sprite(.Clk(Clk), .blue_evil_read_address(blue_evil_read_address), .blue_evil_data_out(blue_evil_data_out));
+    	 
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
     HexDriver hex_inst_1 (keycode[7:4], HEX1);
@@ -139,3 +155,4 @@ module lab8( input               CLOCK_50,
              connect to the keyboard? List any two.  Give an answer in your Post-Lab.
     **************************************************************************************/
 endmodule
+

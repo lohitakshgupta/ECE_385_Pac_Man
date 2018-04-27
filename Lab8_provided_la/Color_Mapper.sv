@@ -14,10 +14,13 @@
 //-------------------------------------------------------------------------
 
 // color_mapper: Decide which color to be output to VGA for each pixel.
-module  color_mapper ( input              is_ball, is_wall,           // Whether current pixel belongs to ball 
+module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_green_evil, is_blue_evil,// Whether current pixel belongs to ball 
                                                               //   or background (computed in ball.sv)
                        input        [9:0] DrawX, DrawY,       // Current pixel coordinates
 							  input logic	[7:0] pac_man_cut_data_out_R, pac_man_cut_data_out_G, pac_man_cut_data_out_B,
+							  input logic	[7:0] red_evil_data_out_R, red_evil_data_out_G, red_evil_data_out_B,
+							  input logic	[7:0] green_evil_data_out_R, green_evil_data_out_G, green_evil_data_out_B,
+							  input logic	[7:0] blue_evil_data_out_R, blue_evil_data_out_G, blue_evil_data_out_B,
                        output logic [7:0] VGA_R, VGA_G, VGA_B // VGA RGB output
 							 
 							);
@@ -39,19 +42,40 @@ module  color_mapper ( input              is_ball, is_wall,           // Whether
             Green = pac_man_cut_data_out_G;
             Blue = pac_man_cut_data_out_B;
         end
+		  else if (is_red_evil == 1'b1) 
+        begin
+            // Red Evil
+            Red = red_evil_data_out_R;
+            Green = red_evil_data_out_G;
+            Blue = red_evil_data_out_B;
+        end
+		  else if (is_green_evil == 1'b1) 
+        begin
+            // Green Evil
+            Red = green_evil_data_out_R;
+            Green = green_evil_data_out_G;
+            Blue = green_evil_data_out_B;
+        end
+		  else if (is_blue_evil == 1'b1) 
+        begin
+            // Blue Evil
+            Red = blue_evil_data_out_R;
+            Green = blue_evil_data_out_G;
+            Blue = blue_evil_data_out_B;
+        end
         else if((is_wall == 1'b1) && (DrawY < 352))
 		  begin
 				 // Blue Wall
-            Red = 8'h00;
+            Red = 8'hff;
             Green = 8'h00;
-            Blue = 8'hff;
+            Blue = 8'h00;
 		  end
 		  else
         begin
             // Background with nice color gradient
             Red = 8'h3f; 
             Green = 8'h00;
-            Blue = 8'h7f - {1'b0, DrawX[9:3]};
+            Blue = 8'h7f; //- {1'b0, DrawX[9:3]};
         end
     end 
     
