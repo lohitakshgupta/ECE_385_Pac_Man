@@ -16,6 +16,7 @@
 module lab8( input               CLOCK_50,
              input        [3:0]  KEY,          //bit 0 is set up as Reset
              output logic [6:0]  HEX0, HEX1,
+				 output logic [8:0]  LEDG,
              // VGA Interface 
              output logic [7:0]  VGA_R,        //VGA Red
                                  VGA_G,        //VGA Green
@@ -61,6 +62,17 @@ module lab8( input               CLOCK_50,
 	 logic is_red_evil, is_green_evil, is_blue_evil;
 	 logic [9:0] DrawX, DrawY;
 	 logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out;
+	 logic led1, led2, led3, led4;
+	 
+	 assign LEDG[0] = is_wall_up;
+	 assign LEDG[1] = is_wall_down;
+	 assign LEDG[2] = is_wall_right;
+	 assign LEDG[3] = is_wall_left;
+	 assign LEDG[4] = led1;
+	 assign LEDG[5] = led2;
+	 assign LEDG[6] = led3;
+	 assign LEDG[7] = led4;
+	 assign LEDG[8] = 1'b0;
     
     // Interface between NIOS II and EZ-OTG chip
     hpi_io_intf hpi_io_inst(
@@ -121,7 +133,7 @@ module lab8( input               CLOCK_50,
     // Which signal should be frame_clk?
     pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall),
 							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
-							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out));
+							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .led1(led1), .led2(led2), .led3(led3), .led4(led4));
     
 	 //red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), .is_wall(is_wall));
 
