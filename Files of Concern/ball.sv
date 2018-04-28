@@ -24,18 +24,19 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 					output logic [9:0] pac_man_cut_read_address,
 					//output logic [9:0] pac_man_full_read_address,
                output logic  is_ball, is_food_eaten,            // Whether current pixel belongs to ball or background
-					output logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out
+					output logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out,
+					output logic led1, led2, led3, led4
               );
     
-    parameter [9:0] Ball_X_Center=320 - 16;  // Center position on the X axis
-    parameter [9:0] Ball_Y_Center=240 - 16;  // Center position on the Y axis
-    parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
-    parameter [9:0] Ball_X_Max=639 - 32;     // Rightmost point on the X axis
-    parameter [9:0] Ball_Y_Min=0;       // Topmost point on the Y axis
-    parameter [9:0] Ball_Y_Max=479 - 32;     // Bottommost point on the Y axis
-    parameter [9:0] Ball_X_Step=1;      // Step size on the X axis
-    parameter [9:0] Ball_Y_Step=1;      // Step size on the Y axis
-    parameter [9:0] Ball_Size= 26;        // Ball size
+    parameter [9:0] Ball_X_Center = 320;//320 - 16;  // Center position on the X axis
+    parameter [9:0] Ball_Y_Center = 224;//240 - 16;  // Center position on the Y axis
+//    parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
+//    parameter [9:0] Ball_X_Max=639;     // Rightmost point on the X axis
+//    parameter [9:0] Ball_Y_Min=0;       // Topmost point on the Y axis
+//    parameter [9:0] Ball_Y_Max=479;     // Bottommost point on the Y axis
+    parameter [9:0] Ball_X_Step = 1;      // Step size on the X axis
+    parameter [9:0] Ball_Y_Step = 1;      // Step size on the Y axis
+    parameter [9:0] Ball_Size = 26;        // Ball size
     
      // Invert the values of the steps
      
@@ -117,25 +118,53 @@ module  pac_man ( input         Clk,                // 50 MHz clock
            * S - 0x16
            * D - 0x07
            */
-		
-        if((key == 8'h1A) && (is_wall_up == 1'b0)) begin
-                Ball_X_Motion_in = 10'd0;
-                Ball_Y_Motion_in = Ball_Y_Step_inv;
-          end
-          else if((key == 8'h04) && (is_wall_left == 1'b0)) begin
+			  
+          led1 = 1'b0;
+			 led2 = 1'b0;
+			 led3 = 1'b0;
+			 led4 = 1'b0;
+			 
+          if((key == 8'h04) && (is_wall_left != 1'b1)) begin			//GOLDEN!!!!
                 Ball_X_Motion_in = Ball_X_Step_inv;
                 Ball_Y_Motion_in = 10'd0;
+					 led1 = 1'b1;
           end
-          else if((key == 8'h16) && (is_wall_down == 1'b0)) begin
+          else if((key == 8'h16) && (is_wall_down != 1'b1)) begin
                 Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
+					 led2 = 1'b1;
           end
-          else if((key == 8'h07) && (is_wall_right == 1'b0))
+          else if((key == 8'h07) && (is_wall_right != 1'b1))
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
+					 led3 = 1'b1;
 			 end
-			
+			 else if((key == 8'h1A) && (is_wall_up != 1'b1)) begin    
+                Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+					 led4 = 1'b1;
+          end
+			 	
+		
+//        if((key == 8'h1A) && (is_wall_up != 1'b1)) begin         //old golden
+//                Ball_X_Motion_in = 10'd0;
+//                Ball_Y_Motion_in = Ball_Y_Step_inv;
+//          end
+//          else if((key == 8'h04) && (is_wall_left != 1'b1)) begin
+//                Ball_X_Motion_in = Ball_X_Step_inv;
+//                Ball_Y_Motion_in = 10'd0;
+//          end
+//          else if((key == 8'h16) && (is_wall_down != 1'b1)) begin
+//                Ball_X_Motion_in = 10'd0; 
+//                Ball_Y_Motion_in = Ball_Y_Step;
+//          end
+//          else if((key == 8'h07) && (is_wall_right != 1'b1))
+//			 begin
+//                Ball_X_Motion_in = Ball_X_Step;
+//                Ball_Y_Motion_in = 10'd0;
+//			 end
+
 			
 //			if(key == 8'h1A) 
 //		    begin
@@ -202,7 +231,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
         // e.g. Ball_Y_Pos - Ball_Size <= Ball_Y_Min 
         // If Ball_Y_Pos is 0, then Ball_Y_Pos - Ball_Size will not be -4, but rather a large positive number.
     
-	 if( (0 <= DistX) & (DistX < (Size)) & (0 <= DistY) & (DistY < (Size)))begin
+	 if( (0 <= DistX) && (DistX < (Size)) && (0 <= DistY) && (DistY < (Size)))begin
 				pac_man_cut_read_address = DistY*(Size) + DistX;
             is_ball = 1'b1;
 				is_food_eaten = 1'b1;
