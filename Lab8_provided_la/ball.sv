@@ -18,11 +18,12 @@ module  pac_man ( input         Clk,                // 50 MHz clock
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
 									  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left,
+									  //is_food, is_food_big_no_color,
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                input [7:0]   key,               // The currently pressed keys
 					output logic [9:0] pac_man_cut_read_address,
 					//output logic [9:0] pac_man_full_read_address,
-               output logic  is_ball,             // Whether current pixel belongs to ball or background
+               output logic  is_ball, is_food_eaten,            // Whether current pixel belongs to ball or background
 					output logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out
               );
     
@@ -204,10 +205,12 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 	 if( (0 <= DistX) & (DistX < (Size)) & (0 <= DistY) & (DistY < (Size)))begin
 				pac_man_cut_read_address = DistY*(Size) + DistX;
             is_ball = 1'b1;
+				is_food_eaten = 1'b1;
 			end
         else begin
 				pac_man_cut_read_address = 10'b0000000000;
             is_ball = 1'b0;
+				is_food_eaten = 1'b0;
         end      
    end
     

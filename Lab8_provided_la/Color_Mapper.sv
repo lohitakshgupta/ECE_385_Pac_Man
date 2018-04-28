@@ -14,7 +14,7 @@
 //-------------------------------------------------------------------------
 
 // color_mapper: Decide which color to be output to VGA for each pixel.
-module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_green_evil, is_blue_evil,// Whether current pixel belongs to ball 
+module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_green_evil, is_blue_evil, is_food,// Whether current pixel belongs to ball 
                                                               //   or background (computed in ball.sv)
                        input        [9:0] DrawX, DrawY,       // Current pixel coordinates
 							  input logic	[7:0] pac_man_cut_data_out_R, pac_man_cut_data_out_G, pac_man_cut_data_out_B,
@@ -62,6 +62,13 @@ module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_gree
             Red = blue_evil_data_out_R;
             Green = blue_evil_data_out_G;
             Blue = blue_evil_data_out_B;
+        end
+		  else if (is_food == 1'b0 && (DrawY < 352)) 
+        begin
+            // Yellow Food
+            Red = 8'hff;
+            Green = 8'hff;
+            Blue = 8'h00;
         end
         else if((is_wall == 1'b1) && (DrawY < 352))
 		  begin

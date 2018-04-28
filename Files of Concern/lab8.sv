@@ -59,6 +59,7 @@ module lab8( input               CLOCK_50,
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
 	 logic is_ball, is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left;
 	 logic is_red_evil, is_green_evil, is_blue_evil;
+	 logic is_food_eaten, is_food, is_food_big_no_color;
 	 logic [9:0] DrawX, DrawY;
 	 logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out;
     
@@ -121,7 +122,7 @@ module lab8( input               CLOCK_50,
     // Which signal should be frame_clk?
     pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall),
 							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
-							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out));
+							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten));//.is_food_big_no_color(is_food_big_no_color), .is_food_eaten(is_food_eaten));
     
 	 //red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), .is_wall(is_wall));
 
@@ -137,10 +138,12 @@ module lab8( input               CLOCK_50,
 											.pac_man_cut_data_out_R(pac_man_cut_data_out[23:16]), .pac_man_cut_data_out_G(pac_man_cut_data_out[15:8]), .pac_man_cut_data_out_B(pac_man_cut_data_out[7:0]),	
 											.red_evil_data_out_R(red_evil_data_out[23:16]), .red_evil_data_out_G(red_evil_data_out[15:8]), .red_evil_data_out_B(red_evil_data_out[7:0]),
 											.green_evil_data_out_R(green_evil_data_out[23:16]), .green_evil_data_out_G(green_evil_data_out[15:8]), .green_evil_data_out_B(green_evil_data_out[7:0]),
-											.blue_evil_data_out_R(blue_evil_data_out[23:16]), .blue_evil_data_out_G(blue_evil_data_out[15:8]), .blue_evil_data_out_B(blue_evil_data_out[7:0]));
+											.blue_evil_data_out_R(blue_evil_data_out[23:16]), .blue_evil_data_out_G(blue_evil_data_out[15:8]), .blue_evil_data_out_B(blue_evil_data_out[7:0]),
+											.is_food(is_food));
 											
 	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out));
 	 
+	 food food_display(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
  	 //red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
 
 	 //green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));
