@@ -8,6 +8,11 @@ module  wall ( input Clk,
 		//declaring maze
 		reg [19:0] wall[0:14];
 		
+//		logic top_right_up, top_left_up, bottom_right_right, bottom_left_left;
+//		logic top_right_right, top_left_left, bottom_right_down, bottom_left_down;
+
+		logic top_right, top_left, bottom_right, bottom_left;
+		
 		//instantiating maze
 		always_ff @(posedge Clk) begin
 		
@@ -118,10 +123,36 @@ module  wall ( input Clk,
 		end
 			
 	assign is_wall = wall[DrawY>>5][DrawX>>5]; //using floor and block size of 32
-	assign is_wall_up = wall[(Ball_Y_Pos_out - 1)>>5][(Ball_X_Pos_out + 15)>>5]; //wall[(DrawY>>5)-1][DrawX>>5];
-	assign is_wall_down = wall[(Ball_Y_Pos_out + 32)>>5][(Ball_X_Pos_out + 15)>>5]; //wall[(DrawY>>5)+1][DrawX>>5];
-	assign is_wall_right = wall[(Ball_Y_Pos_out + 15)>>5][(Ball_X_Pos_out + 32)>>5]; //wall[DrawY>>5][(DrawX>>5)+1];
-	assign is_wall_left = wall[(Ball_Y_Pos_out + 15)>>5][(Ball_X_Pos_out - 1)>>5]; //wall[DrawY>>5][(DrawX>>5)-1];
+//	assign is_wall_up = wall[(Ball_Y_Pos_out - 1)>>5][(Ball_X_Pos_out + 15)>>5]; //wall[(DrawY>>5)-1][DrawX>>5];
+//	assign is_wall_down = wall[(Ball_Y_Pos_out + 32)>>5][(Ball_X_Pos_out + 15)>>5]; //wall[(DrawY>>5)+1][DrawX>>5];
+//	assign is_wall_right = wall[(Ball_Y_Pos_out + 15)>>5][(Ball_X_Pos_out + 32)>>5]; //wall[DrawY>>5][(DrawX>>5)+1];
+//	assign is_wall_left = wall[(Ball_Y_Pos_out + 15)>>5][(Ball_X_Pos_out - 1)>>5]; //wall[DrawY>>5][(DrawX>>5)-1];
 
+//	assign top_left_up = wall[(Ball_Y_Pos_out-1)>>5][Ball_X_Pos_out>>5];
+//	assign top_left_left = wall[Ball_Y_Pos_out>>5][(Ball_X_Pos_out-1)>>5];
+//	
+//	assign top_right_up = wall[(Ball_Y_Pos_out-1)>>5][(Ball_X_Pos_out+25)>>5];
+//	assign top_right_right = wall[Ball_Y_Pos_out>>5][(Ball_X_Pos_out+26)>>5];
+//	
+//	assign bottom_left_down = wall[(Ball_Y_Pos_out+26)>>5][Ball_X_Pos_out>>5];
+//	assign bottom_left_left = wall[(Ball_Y_Pos_out+25)>>5][(Ball_X_Pos_out-1)>>5];
+//	
+//	assign bottom_right_down = wall[(Ball_Y_Pos_out+26)>>5][(Ball_X_Pos_out+25)>>5];
+//	assign bottom_right_right = wall[(Ball_Y_Pos_out+25)>>5][(Ball_X_Pos_out+26)>>5];
+//	
+//	assign is_wall_up = top_left_up | top_right_up;
+//	assign is_wall_down = bottom_left_down | bottom_right_down;
+//	assign is_wall_left = top_left_left | bottom_left_left;
+//	assign is_wall_right = top_right_right | bottom_right_right;
+
+	assign top_left = wall[Ball_Y_Pos_out>>5][Ball_X_Pos_out>>5];
+	assign top_right = wall[Ball_Y_Pos_out>>5][(Ball_X_Pos_out+25)>>5];
+	assign bottom_left = wall[(Ball_Y_Pos_out+25)>>5][Ball_X_Pos_out>>5];
+	assign bottom_right = wall[(Ball_Y_Pos_out+25)>>5][(Ball_X_Pos_out+25)>>5];
+
+	assign is_wall_up = top_left | top_right;
+	assign is_wall_down = bottom_left | bottom_right;
+	assign is_wall_left = top_left | bottom_left;
+	assign is_wall_right = top_right | bottom_right;
 	
 endmodule

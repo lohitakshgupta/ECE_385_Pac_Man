@@ -40,6 +40,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
      
     logic [9:0] Ball_X_Pos, Ball_X_Motion, Ball_Y_Pos, Ball_Y_Motion;
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
+	 //reg reset_flag_once;
 	 
     int DistX, DistY, Size;
     assign DistX = DrawX - Ball_X_Pos;
@@ -116,19 +117,19 @@ module  pac_man ( input         Clk,                // 50 MHz clock
            * D - 0x07
            */
 		
-        if(key == 8'h1A) begin
+        if((key == 8'h1A) && (is_wall_up == 1'b0)) begin
                 Ball_X_Motion_in = 10'd0;
                 Ball_Y_Motion_in = Ball_Y_Step_inv;
           end
-          else if(key == 8'h04) begin
+          else if((key == 8'h04) && (is_wall_left == 1'b0)) begin
                 Ball_X_Motion_in = Ball_X_Step_inv;
                 Ball_Y_Motion_in = 10'd0;
           end
-          else if(key == 8'h16) begin
-                Ball_X_Motion_in = 10'd0;
+          else if((key == 8'h16) && (is_wall_down == 1'b0)) begin
+                Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
           end
-          else if(key == 8'h07)
+          else if((key == 8'h07) && (is_wall_right == 1'b0))
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
