@@ -22,7 +22,8 @@ module  pac_man ( input         Clk,                // 50 MHz clock
                input [7:0]   key,               // The currently pressed keys
 					output logic [9:0] pac_man_cut_read_address,
 					//output logic [9:0] pac_man_full_read_address,
-               output logic  is_ball             // Whether current pixel belongs to ball or background
+               output logic  is_ball,             // Whether current pixel belongs to ball or background
+					output logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out
               );
     
     parameter [9:0] Ball_X_Center=320 - 16;  // Center position on the X axis
@@ -31,20 +32,24 @@ module  pac_man ( input         Clk,                // 50 MHz clock
     parameter [9:0] Ball_X_Max=639 - 32;     // Rightmost point on the X axis
     parameter [9:0] Ball_Y_Min=0;       // Topmost point on the Y axis
     parameter [9:0] Ball_Y_Max=479 - 32;     // Bottommost point on the Y axis
-    parameter [9:0] Ball_X_Step=0.5;      // Step size on the X axis
-    parameter [9:0] Ball_Y_Step=0.5;      // Step size on the Y axis
-    parameter [9:0] Ball_Size= 32;        // Ball size
+    parameter [9:0] Ball_X_Step=1;      // Step size on the X axis
+    parameter [9:0] Ball_Y_Step=1;      // Step size on the Y axis
+    parameter [9:0] Ball_Size= 26;        // Ball size
     
      // Invert the values of the steps
      
     logic [9:0] Ball_X_Pos, Ball_X_Motion, Ball_Y_Pos, Ball_Y_Motion;
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
+	 //reg reset_flag_once;
 	 
     int DistX, DistY, Size;
     assign DistX = DrawX - Ball_X_Pos;
     assign DistY = DrawY - Ball_Y_Pos;
     assign Size = Ball_Size;
-    
+	 
+	 assign Ball_X_Pos_out = Ball_X_Pos;
+	 assign Ball_Y_Pos_out = Ball_Y_Pos;
+  
 	 logic [9:0] Ball_X_Step_inv, Ball_Y_Step_inv;
     assign Ball_X_Step_inv = (~(Ball_X_Step) + 1'b1);
     assign Ball_Y_Step_inv = (~(Ball_Y_Step) + 1'b1);
@@ -111,85 +116,85 @@ module  pac_man ( input         Clk,                // 50 MHz clock
            * S - 0x16
            * D - 0x07
            */
-		/*
-        if(key == 8'h1A) begin
+		
+        if((key == 8'h1A) && (is_wall_up == 1'b0)) begin
                 Ball_X_Motion_in = 10'd0;
                 Ball_Y_Motion_in = Ball_Y_Step_inv;
           end
-          else if(key == 8'h04) begin
+          else if((key == 8'h04) && (is_wall_left == 1'b0)) begin
                 Ball_X_Motion_in = Ball_X_Step_inv;
                 Ball_Y_Motion_in = 10'd0;
           end
-          else if(key == 8'h16) begin
-                Ball_X_Motion_in = 10'd0;
+          else if((key == 8'h16) && (is_wall_down == 1'b0)) begin
+                Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
           end
-          else if(key == 8'h07)
+          else if((key == 8'h07) && (is_wall_right == 1'b0))
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
 			 end
-			*/
 			
-			if(key == 8'h1A) 
-		    begin
-				if (is_wall_up == 1'b0) //no wall above, pacman can move up
-					 begin
-                Ball_X_Motion_in = 10'd0;
-                Ball_Y_Motion_in = Ball_Y_Step_inv;
-					 //flag = 1'b1;
-					 end
-				else 
-					 begin
-					 Ball_X_Motion_in = 10'd0; //wall above, pacman stay at current location
-                Ball_Y_Motion_in = 10'd0;
-					 end
-          end
-			 
-          else if(key == 8'h04) 
-			 begin
-				if (is_wall_left == 1'b0) //no wall left, pacman can move left
-					 begin
-                Ball_X_Motion_in = Ball_X_Step_inv;
-                Ball_Y_Motion_in = 10'd0;
-					 //flag = 1'b1;
-					 end
-				else 
-					 begin
-					 Ball_X_Motion_in = 10'd0; //wall left, pacman stay at current location
-                Ball_Y_Motion_in = 10'd0;
-					 end
-          end
-			 
-          else if(key == 8'h16) 
-			 begin
-				if (is_wall_down == 1'b0) //no wall below, pacman can move down
-					 begin
-                Ball_X_Motion_in = 10'd0;
-                Ball_Y_Motion_in = Ball_Y_Step;
-					 //flag = 1'b1;
-					 end
-				else 
-					 begin
-					 Ball_X_Motion_in = 10'd0; //wall below, pacman stay at current location
-                Ball_Y_Motion_in = 10'd0;
-					 end
-          end
-			 
-          else if(key == 8'h07)
-			 begin
-				if (is_wall_right == 1'b0) //no wall right, pacman can move right
-					 begin
-                Ball_X_Motion_in = Ball_X_Step;
-                Ball_Y_Motion_in = 10'd0;
-					 //flag = 1'b1;
-					 end
-				else 
-					 begin
-					 Ball_X_Motion_in = 10'd0; //wall right, pacman stay at current location
-                Ball_Y_Motion_in = 10'd0;
-					 end
-			  end
+			
+//			if(key == 8'h1A) 
+//		    begin
+//				if (is_wall_up == 1'b0) //no wall above, pacman can move up
+//					 begin
+//                Ball_X_Motion_in = 10'd0;
+//                Ball_Y_Motion_in = Ball_Y_Step_inv;
+//					 //flag = 1'b1;
+//					 end
+//				else 
+//					 begin
+//					 //Ball_X_Motion_in = 10'd0; //wall above, pacman stay at current location
+//                Ball_Y_Motion_in = 10'd0;
+//					 end
+//          end
+//			 
+//          else if(key == 8'h04) 
+//			 begin
+//				if (is_wall_left == 1'b0) //no wall left, pacman can move left
+//					 begin
+//                Ball_X_Motion_in = Ball_X_Step_inv;
+//                Ball_Y_Motion_in = 10'd0;
+//					 //flag = 1'b1;
+//					 end
+//				else 
+//					 begin
+//					 Ball_X_Motion_in = 10'd0; //wall left, pacman stay at current location
+//                //Ball_Y_Motion_in = 10'd0;
+//					 end
+//          end
+//			 
+//          else if(key == 8'h16) 
+//			 begin
+//				if (is_wall_down == 1'b0) //no wall below, pacman can move down
+//					 begin
+//                Ball_X_Motion_in = 10'd0;
+//                Ball_Y_Motion_in = Ball_Y_Step;
+//					 //flag = 1'b1;
+//					 end
+//				else 
+//					 begin
+//					 //Ball_X_Motion_in = 10'd0; //wall below, pacman stay at current location
+//                Ball_Y_Motion_in = 10'd0;
+//					 end
+//          end
+//			 
+//          else if(key == 8'h07)
+//			 begin
+//				if (is_wall_right == 1'b0) //no wall right, pacman can move right
+//					 begin
+//                Ball_X_Motion_in = Ball_X_Step;
+//                Ball_Y_Motion_in = 10'd0;
+//					 //flag = 1'b1;
+//					 end
+//				else 
+//					 begin
+//					 Ball_X_Motion_in = 10'd0; //wall right, pacman stay at current location
+//                //Ball_Y_Motion_in = 10'd0;
+//					 end
+//			  end
 			            
         // Be careful when using comparators with "logic" datatype because compiler treats 
         //   both sides of the operator UNSIGNED numbers. (unless with further type casting)
