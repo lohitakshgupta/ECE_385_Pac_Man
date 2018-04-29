@@ -37,9 +37,11 @@ end
 */
 
 always_ff @ (posedge Clk) begin
+	is_food_big_no_color <= food[food_read_address];
 	if (is_food_eaten == 1'b1)begin
 		food[food_write_address] <= 1'b1;
 	end
+	is_food_big_no_color <= food[food_read_address];
 	if((DrawX_limited >= 0) && (DrawX_limited < 5) && (DrawY_limited >= 0) && (DrawY_limited < 5))
 	begin
 		is_food <= food[food_read_address];

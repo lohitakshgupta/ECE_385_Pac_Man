@@ -17,6 +17,7 @@ module lab8( input               CLOCK_50,
              input        [3:0]  KEY,          //bit 0 is set up as Reset
              output logic [6:0]  HEX0, HEX1,
 				 output logic [8:0]  LEDG,
+				 output logic [5:0]  LEDR, 
              // VGA Interface 
              output logic [7:0]  VGA_R,        //VGA Red
                                  VGA_G,        //VGA Green
@@ -63,17 +64,22 @@ module lab8( input               CLOCK_50,
 	 logic is_food_eaten, is_food, is_food_big_no_color;
 	 logic [9:0] DrawX, DrawY;
 	 logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out;
-	 logic led1, led2, led3, led4;
+	 logic led1, led2, led3, led4, led5, led6, inside_block;
+	 logic [2:0] direction;
 	 
 	 assign LEDG[0] = is_wall_up;
 	 assign LEDG[1] = is_wall_down;
 	 assign LEDG[2] = is_wall_right;
 	 assign LEDG[3] = is_wall_left;
-	 assign LEDG[4] = led1;
+	 assign LEDG[4] = led4;
 	 assign LEDG[5] = led2;
 	 assign LEDG[6] = led3;
-	 assign LEDG[7] = led4;
-	 assign LEDG[8] = 1'b0;
+	 assign LEDG[7] = led1;
+	 assign LEDG[8] = inside_block;
+	 
+	 assign LEDR[0] = led5;
+	 assign LEDR[1] = led6;
+	 assign LEDR[4:2] = direction;
     
     // Interface between NIOS II and EZ-OTG chip
     hpi_io_intf hpi_io_inst(
@@ -134,7 +140,9 @@ module lab8( input               CLOCK_50,
     // Which signal should be frame_clk?
     pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall),
 							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
-							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .led1(led1), .led2(led2), .led3(led3), .led4(led4));
+							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .led1(led1), .led2(led2), .led3(led3), .led4(led4), .led5(led5), .led6(led6),
+							.direction(direction), .inside_block(inside_block),
+							.is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
     
 	 //red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), .is_wall(is_wall));
 
@@ -143,7 +151,8 @@ module lab8( input               CLOCK_50,
 	 //blue_evil_move blue_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .blue_evil_read_address(blue_evil_read_address), .is_blue_evil(is_blue_evil), .is_wall(is_wall));
 	 
 	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall), .is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
-								.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out));
+								.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out),
+								.inside_block(inside_block));
 	 
     color_mapper color_instance(.is_ball(is_ball), .is_wall(is_wall), .is_red_evil(is_red_evil), .is_green_evil(is_green_evil), .is_blue_evil(is_blue_evil), .DrawX(DrawX), .DrawY(DrawY), 
 											.VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B),
@@ -155,7 +164,7 @@ module lab8( input               CLOCK_50,
 											
 	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out));
 	 
-	 food food_display(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
+	 //food food_display(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
  	 //red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
 
 	 //green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));

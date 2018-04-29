@@ -63,13 +63,6 @@ module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_gree
             Green = blue_evil_data_out_G;
             Blue = blue_evil_data_out_B;
         end
-		  else if (is_food == 1'b0 && (DrawY < 352)) 
-        begin
-            // Yellow Food
-            Red = 8'hff;
-            Green = 8'hff;
-            Blue = 8'h00;
-        end
         else if((is_wall == 1'b1) && (DrawY < 352))
 		  begin
 				 // Blue Wall
@@ -77,6 +70,15 @@ module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_gree
             Green = 8'h00;
             Blue = 8'h00;
 		  end
+		  /*
+		  else if ((is_food == 1'b0 && (DrawY < 352)) && is_ball != 1'b1) 
+        begin
+            // Yellow Food
+            Red = 8'hff;
+            Green = 8'hff;
+            Blue = 8'h00;
+        end
+		  */
 		  else
         begin
             // Background with nice color gradient

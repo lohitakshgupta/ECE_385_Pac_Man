@@ -1,7 +1,7 @@
 module  wall ( input Clk,
 					input [9:0]   DrawX, DrawY,       // Current pixel coordinates
 					input [9:0]   Ball_X_Pos_out, Ball_Y_Pos_out,
-               output logic  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left // Whether current pixel belongs to ball or background
+               output logic  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left, inside_block // Whether current pixel belongs to ball or background
               );
 				  
 		
@@ -138,11 +138,39 @@ module  wall ( input Clk,
 	is_wall_down = 1'b1;
 	is_wall_right = 1'b1;
 	is_wall_left = 1'b1;
+	inside_block = 1'b0;
 	
 	X_coordinate = Ball_X_Pos_out/32;
 	Y_coordinate = Ball_Y_Pos_out/32;
 	X_end = (Ball_X_Pos_out+25)/32;
 	Y_end = (Ball_Y_Pos_out+25)/32;
+	
+	if ( ((X_coordinate-X_end)==0) && ((Y_coordinate-Y_end)==0) )//it is inside
+		begin
+		inside_block = 1'b1;
+		is_wall_up = wall[Y_coordinate-1][X_coordinate];
+		is_wall_down = wall[Y_coordinate+1][X_coordinate];
+		is_wall_right = wall[Y_coordinate][X_coordinate+1];
+		is_wall_left = wall[Y_coordinate][X_coordinate-1];
+		end
+//	else
+//		begin
+//		inside_block = 1'b0;
+//		end
+	end
+
+/*
+	always_ff @(posedge Clk) begin                        
+	
+//	is_wall_up = 1'b1;
+//	is_wall_down = 1'b1;
+//	is_wall_right = 1'b1;
+//	is_wall_left = 1'b1;
+	
+	X_coordinate <= Ball_X_Pos_out/32;
+	Y_coordinate <= Ball_Y_Pos_out/32;
+	X_end <= (Ball_X_Pos_out+25)/32;
+	Y_end <= (Ball_Y_Pos_out+25)/32;
 	
 	if ( ((X_coordinate-X_end)==0) && ((Y_coordinate-Y_end)==0) )
 		begin
@@ -151,9 +179,17 @@ module  wall ( input Clk,
 		is_wall_right = wall[Y_coordinate][X_coordinate+1];
 		is_wall_left = wall[Y_coordinate][X_coordinate-1];
 		end
+	else
+		begin
+		is_wall_up = is_wall_up_previous;
+		is_wall_down = wall[Y_coordinate+1][X_coordinate];
+		is_wall_right = wall[Y_coordinate][X_coordinate+1];
+		is_wall_left = wall[Y_coordinate][X_coordinate-1];
+		end
 	end
-
-
+	
+	assign 
+*/
 
 /*	assign top_left_up = wall[(Ball_Y_Pos_out>>5)-1][Ball_X_Pos_out>>5];
 	assign top_left_left = wall[Ball_Y_Pos_out>>5][(Ball_X_Pos_out-1)>>5];
