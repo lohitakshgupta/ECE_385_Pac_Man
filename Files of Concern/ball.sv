@@ -266,12 +266,12 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 	 if( (0 <= DistX) && (DistX < (Size)) && (0 <= DistY) && (DistY < (Size)))begin
 				pac_man_cut_read_address = DistY*(Size) + DistX;
             is_ball = 1'b1;
-				//is_food_eaten = 1'b1;
+				is_food_eaten = 1'b1;
 			end
         else begin
 				pac_man_cut_read_address = 10'b0000000000;
             is_ball = 1'b0;
-				//is_food_eaten = 1'b0;
+				is_food_eaten = 1'b0;
         end      
    end
     

@@ -164,8 +164,9 @@ module lab8( input               CLOCK_50,
 											
 	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out));
 	 
-	 //food food_display(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
- 	 //red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
+	 food food_display(.Clk(Clk), .Reset(Reset_h), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
+ 	 
+	 //red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
 
 	 //green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));
 		 
