@@ -18,15 +18,16 @@ module  pac_man ( input         Clk,                // 50 MHz clock
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
 									  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left,
-									  //is_food, is_food_big_no_color,
+									  is_food, is_food_big_no_color, inside_block,
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                input [7:0]   key,               // The currently pressed keys
 					output logic [9:0] pac_man_cut_read_address,
 					//output logic [9:0] pac_man_full_read_address,
                output logic  is_ball, is_food_eaten,            // Whether current pixel belongs to ball or background
 					output logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out,
-					output logic led1, led2, led3, led4
-              );
+					output logic led1, led2, led3, led4, led5, led6,
+					output logic [2:0] direction
+					);
     
     parameter [9:0] Ball_X_Center = 320;//320 - 16;  // Center position on the X axis
     parameter [9:0] Ball_Y_Center = 224;//240 - 16;  // Center position on the Y axis
@@ -44,13 +45,18 @@ module  pac_man ( input         Clk,                // 50 MHz clock
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
 	 //reg reset_flag_once;
 	 
+	 logic [2:0] previous_direction, current_direction; 
+	 
     int DistX, DistY, Size;
     assign DistX = DrawX - Ball_X_Pos;
     assign DistY = DrawY - Ball_Y_Pos;
     assign Size = Ball_Size;
 	 
+	 assign direction = current_direction;
+	 
 	 assign Ball_X_Pos_out = Ball_X_Pos;
 	 assign Ball_Y_Pos_out = Ball_Y_Pos;
+	 
   
 	 logic [9:0] Ball_X_Step_inv, Ball_Y_Step_inv;
     assign Ball_X_Step_inv = (~(Ball_X_Step) + 1'b1);
@@ -73,6 +79,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
             Ball_Y_Pos <= Ball_Y_Center;
             Ball_X_Motion <= 10'd0;
             Ball_Y_Motion <= 10'd0;
+				current_direction <=3'b111;
 				//flag <= 1'b0;
         end
         else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
@@ -81,6 +88,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
             Ball_Y_Pos <= Ball_Y_Pos_in;
             Ball_X_Motion <= Ball_X_Motion_in;
             Ball_Y_Motion <= Ball_Y_Motion_in;
+				current_direction <= previous_direction;
         end
         // By defualt, keep the register values.
     end
@@ -93,6 +101,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
         Ball_Y_Pos_in = Ball_Y_Pos + Ball_Y_Motion;
 		  Ball_X_Motion_in = Ball_X_Motion;
 		  Ball_Y_Motion_in = Ball_Y_Motion;
+		  previous_direction = current_direction;
         // By default, keep motion unchanged
 			/*if(flag == 1'b1)
 				begin
@@ -123,30 +132,53 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 			 led2 = 1'b0;
 			 led3 = 1'b0;
 			 led4 = 1'b0;
+			 led5 = 1'b0;
+			 led6 = 1'b0;
+			 		 
+			 //previous_direction = 3'b111;
 			 
           if((key == 8'h04) && (is_wall_left != 1'b1)) begin			//GOLDEN!!!!
                 Ball_X_Motion_in = Ball_X_Step_inv;
                 Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b000;
 					 led1 = 1'b1;
           end
           else if((key == 8'h16) && (is_wall_down != 1'b1)) begin
                 Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
+					 previous_direction = 3'b001;
 					 led2 = 1'b1;
           end
           else if((key == 8'h07) && (is_wall_right != 1'b1))
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b010;
 					 led3 = 1'b1;
 			 end
 			 else if((key == 8'h1A) && (is_wall_up != 1'b1)) begin    
                 Ball_X_Motion_in = 10'd0;
                 Ball_Y_Motion_in = Ball_Y_Step_inv;
+					 previous_direction = 3'b011;
 					 led4 = 1'b1;
           end
-			 	
-		
+//			 else begin
+//					previous_direction = 3'b111;
+//			 end
+			 
+			 if((previous_direction != 3'b111) && (inside_block == 1'b1))
+			 begin
+			   if(((previous_direction == 3'b000) && (is_wall_left == 1'b1)) || ((previous_direction == 3'b010) && (is_wall_right == 1'b1)))
+				begin
+					Ball_X_Motion_in = 10'd0;
+					led5 = 1'b1;
+				end
+			  else if(((previous_direction == 3'b011) && (is_wall_up == 1'b1)) || ((previous_direction == 3'b001) && (is_wall_down == 1'b1)))
+				begin
+					Ball_Y_Motion_in = 10'd0;
+					led6 = 1'b1;
+				end
+			 end
 //        if((key == 8'h1A) && (is_wall_up != 1'b1)) begin         //old golden
 //                Ball_X_Motion_in = 10'd0;
 //                Ball_Y_Motion_in = Ball_Y_Step_inv;
@@ -234,12 +266,12 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 	 if( (0 <= DistX) && (DistX < (Size)) && (0 <= DistY) && (DistY < (Size)))begin
 				pac_man_cut_read_address = DistY*(Size) + DistX;
             is_ball = 1'b1;
-				is_food_eaten = 1'b1;
+				//is_food_eaten = 1'b1;
 			end
         else begin
 				pac_man_cut_read_address = 10'b0000000000;
             is_ball = 1'b0;
-				is_food_eaten = 1'b0;
+				//is_food_eaten = 1'b0;
         end      
    end
     
