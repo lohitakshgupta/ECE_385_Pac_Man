@@ -39,8 +39,16 @@ assign DrawY_limited =  DrawY - ((((DrawY>>5))*32) + 16);
 end
 */
 //always_ff @ (posedge Reset) begin
+<<<<<<< HEAD
 //	food <= food_temp;
 //	//{>>{food}} <= {>>{food_temp}};
+=======
+//	if (Reset) begin
+//		for(int i = 0; i < 220; i++) begin
+//			food[i] <= food_temp[i];
+//		end
+//	end	
+>>>>>>> d2198ce1178cc8a9472324f9229a18c6086d02e6
 //end
 
 
@@ -50,9 +58,8 @@ always_ff @ (posedge Clk) begin
 			food[i] <= food_temp[i];
 		end
 	end	
-	
-	else
-	begin
+
+	else begin
 	if (is_food_eaten == 1'b1)begin
 		food[food_write_address] <= 1'b1;
 	end
