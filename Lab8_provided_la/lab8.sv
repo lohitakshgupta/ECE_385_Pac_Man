@@ -60,11 +60,17 @@ module lab8( input               CLOCK_50,
     logic [15:0] hpi_data_in, hpi_data_out;
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
 	 logic is_ball, is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left;
+	 logic is_wall_up_blue, is_wall_down_blue, is_wall_right_blue, is_wall_left_blue;
+	 logic is_wall_up_red, is_wall_down_red, is_wall_right_red, is_wall_left_red;
+	 logic is_wall_up_green, is_wall_down_green, is_wall_right_green, is_wall_left_green;
 	 logic is_red_evil, is_green_evil, is_blue_evil;
 	 logic is_food_eaten, is_food, is_food_big_no_color;
 	 logic [9:0] DrawX, DrawY;
 	 logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out;
-	 logic led1, led2, led3, led4, led5, led6, inside_block;
+	 logic [9:0] Blue_X_Pos_out, Blue_Y_Pos_out;
+	 logic [9:0] Red_X_Pos_out, Red_Y_Pos_out;
+	 logic [9:0] Green_X_Pos_out, Green_Y_Pos_out;
+	 logic led1, led2, led3, led4, led5, led6, inside_block, inside_block_blue, inside_block_red, inside_block_green;
 	 logic [2:0] direction;
 	 
 	 assign LEDG[0] = is_wall_up;
@@ -144,15 +150,29 @@ module lab8( input               CLOCK_50,
 							.direction(direction), .inside_block(inside_block),
 							.is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
     
-	 //red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), .is_wall(is_wall));
+	 red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), 
+										  .is_wall_up_red(is_wall_up_red), .is_wall_down_red(is_wall_down_red), .is_wall_right_red(is_wall_right_red), .is_wall_left_red(is_wall_left_red),
+										  .inside_block_red(inside_block_red), .Red_X_Pos_out(Red_X_Pos_out), .Red_Y_Pos_out(Red_Y_Pos_out));
 
-	 //green_evil_move green_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .green_evil_read_address(green_evil_read_address), .is_green_evil(is_green_evil), .is_wall(is_wall));
+	 green_evil_move green_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .green_evil_read_address(green_evil_read_address), .is_green_evil(is_green_evil),
+												.is_wall_up_green(is_wall_up_green), .is_wall_down_green(is_wall_down_green), .is_wall_right_green(is_wall_right_green), .is_wall_left_green(is_wall_left_green),
+												.inside_block_green(inside_block_green), .Green_X_Pos_out(Green_X_Pos_out), .Green_Y_Pos_out(Green_Y_Pos_out));
 	 
-	 //blue_evil_move blue_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .blue_evil_read_address(blue_evil_read_address), .is_blue_evil(is_blue_evil), .is_wall(is_wall));
+	 blue_evil_move blue_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .blue_evil_read_address(blue_evil_read_address), .is_blue_evil(is_blue_evil),
+											.is_wall_up_blue(is_wall_up_blue), .is_wall_down_blue(is_wall_down_blue), .is_wall_right_blue(is_wall_right_blue), .is_wall_left_blue(is_wall_left_blue),
+											.inside_block_blue(inside_block_blue), .Blue_X_Pos_out(Blue_X_Pos_out), .Blue_Y_Pos_out(Blue_Y_Pos_out));
 	 
 	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall), .is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
 								.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out),
-								.inside_block(inside_block));
+								.inside_block(inside_block), .Blue_X_Pos_out(Blue_X_Pos_out), .Blue_Y_Pos_out(Blue_Y_Pos_out),
+								.is_wall_up_blue(is_wall_up_blue), .is_wall_down_blue(is_wall_down_blue), .is_wall_right_blue(is_wall_right_blue), .is_wall_left_blue(is_wall_left_blue),
+								.inside_block_blue(inside_block_blue),
+								.Red_X_Pos_out(Red_X_Pos_out), .Red_Y_Pos_out(Red_Y_Pos_out),
+								.is_wall_up_red(is_wall_up_red), .is_wall_down_red(is_wall_down_red), .is_wall_right_red(is_wall_right_red), .is_wall_left_red(is_wall_left_red),
+								.inside_block_red(inside_block_red),
+								.Green_X_Pos_out(Green_X_Pos_out), .Green_Y_Pos_out(Green_Y_Pos_out),
+								.is_wall_up_green(is_wall_up_green), .is_wall_down_green(is_wall_down_green), .is_wall_right_green(is_wall_right_green), .is_wall_left_green(is_wall_left_green),
+								.inside_block_green(inside_block_green));
 	 
     color_mapper color_instance(.is_ball(is_ball), .is_wall(is_wall), .is_red_evil(is_red_evil), .is_green_evil(is_green_evil), .is_blue_evil(is_blue_evil), .DrawX(DrawX), .DrawY(DrawY), 
 											.VGA_R(VGA_R), .VGA_G(VGA_G), .VGA_B(VGA_B),
@@ -166,11 +186,11 @@ module lab8( input               CLOCK_50,
 	 
 	 food food_display(.Clk(Clk), .Reset(Reset_h), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
  	 
-	 //red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
+	 red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
 
-	 //green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));
+	 green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));
 		 
-	 //blue_evil blue_evil_sprite(.Clk(Clk), .blue_evil_read_address(blue_evil_read_address), .blue_evil_data_out(blue_evil_data_out));
+	 blue_evil blue_evil_sprite(.Clk(Clk), .blue_evil_read_address(blue_evil_read_address), .blue_evil_data_out(blue_evil_data_out));
     	 
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);

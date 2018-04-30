@@ -1,7 +1,13 @@
 module  wall ( input Clk,
 					input [9:0]   DrawX, DrawY,       // Current pixel coordinates
 					input [9:0]   Ball_X_Pos_out, Ball_Y_Pos_out,
-               output logic  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left, inside_block // Whether current pixel belongs to ball or background
+					input [9:0]   Blue_X_Pos_out, Blue_Y_Pos_out,
+					input [9:0]   Green_X_Pos_out, Green_Y_Pos_out,
+					input [9:0]   Red_X_Pos_out, Red_Y_Pos_out,
+               output logic  is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left, inside_block, // Whether current pixel belongs to ball or background
+					output logic  is_wall_up_blue, is_wall_down_blue, is_wall_right_blue, is_wall_left_blue, inside_block_blue,
+					output logic  is_wall_up_red, is_wall_down_red, is_wall_right_red, is_wall_left_red, inside_block_red,
+					output logic  is_wall_up_green, is_wall_down_green, is_wall_right_green, is_wall_left_green, inside_block_green
               );
 				  
 		
@@ -14,6 +20,9 @@ module  wall ( input Clk,
 		//logic top_right, top_left, bottom_right, bottom_left;
 		
 		int X_coordinate, Y_coordinate, X_end, Y_end;
+		int X_coordinate_blue, Y_coordinate_blue, X_end_blue, Y_end_blue;
+		int X_coordinate_green, Y_coordinate_green, X_end_green, Y_end_green;
+		int X_coordinate_red, Y_coordinate_red, X_end_red, Y_end_red;
 		
 		//instantiating maze
 		always_ff @(posedge Clk) begin
@@ -50,7 +59,7 @@ module  wall ( input Clk,
 			end
 			
 			for(int i = 0; i < 20; i++) begin
-				if(i == 1 || i == 3 || i == 6 || i == 9 || i == 10 || i == 13 || i == 16 || i == 18) begin
+				if(i == 1 || i == 3 || i == 6 || i == 8 || i == 9 || i == 10 || i == 11 || i == 13 || i == 16 || i == 18) begin
 					wall[4][i] <= 1'b0;
 				end
 				else begin
@@ -159,6 +168,91 @@ module  wall ( input Clk,
 //		end
 	end
 
+	
+	always_comb                         //Blue evil
+	begin
+	
+	is_wall_up_blue = 1'b1;
+	is_wall_down_blue = 1'b1;
+	is_wall_right_blue = 1'b1;
+	is_wall_left_blue = 1'b1;
+	inside_block_blue = 1'b0;
+	
+	X_coordinate_blue = Blue_X_Pos_out/32;
+	Y_coordinate_blue = Blue_Y_Pos_out/32;
+	X_end_blue = (Blue_X_Pos_out+25)/32;
+	Y_end_blue = (Blue_Y_Pos_out+25)/32;
+	
+	if ( ((X_coordinate_blue-X_end_blue)==0) && ((Y_coordinate_blue-Y_end_blue)==0) )//it is inside
+		begin
+		inside_block_blue = 1'b1;
+		is_wall_up_blue = wall[Y_coordinate_blue-1][X_coordinate_blue];
+		is_wall_down_blue = wall[Y_coordinate_blue+1][X_coordinate_blue];
+		is_wall_right_blue = wall[Y_coordinate_blue][X_coordinate_blue+1];
+		is_wall_left_blue = wall[Y_coordinate_blue][X_coordinate_blue-1];
+		end
+//	else
+//		begin
+//		inside_block = 1'b0;
+//		end
+	end
+	
+	always_comb                         //Red evil
+	begin
+	
+	is_wall_up_red = 1'b1;
+	is_wall_down_red = 1'b1;
+	is_wall_right_red = 1'b1;
+	is_wall_left_red = 1'b1;
+	inside_block_red = 1'b0;
+	
+	X_coordinate_red = Red_X_Pos_out/32;
+	Y_coordinate_red = Red_Y_Pos_out/32;
+	X_end_red = (Red_X_Pos_out+25)/32;
+	Y_end_red = (Red_Y_Pos_out+25)/32;
+	
+	if ( ((X_coordinate_red-X_end_red)==0) && ((Y_coordinate_red-Y_end_red)==0) )//it is inside
+		begin
+		inside_block_red = 1'b1;
+		is_wall_up_red = wall[Y_coordinate_red-1][X_coordinate_red];
+		is_wall_down_red = wall[Y_coordinate_red+1][X_coordinate_red];
+		is_wall_right_red = wall[Y_coordinate_red][X_coordinate_red+1];
+		is_wall_left_red = wall[Y_coordinate_red][X_coordinate_red-1];
+		end
+//	else
+//		begin
+//		inside_block = 1'b0;
+//		end
+	end
+	
+	always_comb                         //Green evil
+	begin
+	
+	is_wall_up_green = 1'b1;
+	is_wall_down_green = 1'b1;
+	is_wall_right_green = 1'b1;
+	is_wall_left_green = 1'b1;
+	inside_block_green = 1'b0;
+	
+	X_coordinate_green = Green_X_Pos_out/32;
+	Y_coordinate_green = Green_Y_Pos_out/32;
+	X_end_green = (Green_X_Pos_out+25)/32;
+	Y_end_green = (Green_Y_Pos_out+25)/32;
+	
+	if ( ((X_coordinate_green-X_end_green)==0) && ((Y_coordinate_green-Y_end_green)==0) )//it is inside
+		begin
+		inside_block_green = 1'b1;
+		is_wall_up_green = wall[Y_coordinate_green-1][X_coordinate_green];
+		is_wall_down_green = wall[Y_coordinate_green+1][X_coordinate_green];
+		is_wall_right_green = wall[Y_coordinate_green][X_coordinate_green+1];
+		is_wall_left_green = wall[Y_coordinate_green][X_coordinate_green-1];
+		end
+//	else
+//		begin
+//		inside_block = 1'b0;
+//		end
+	end
+	
 /*
 	always_ff @(posedge Clk) begin                        
 	
