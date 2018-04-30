@@ -61,7 +61,7 @@ module lab8( input               CLOCK_50,
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
 	 logic is_ball, is_wall, is_wall_up, is_wall_down, is_wall_right, is_wall_left;
 	 logic is_red_evil, is_green_evil, is_blue_evil;
-	 logic is_food_eaten, is_food, is_food_big_no_color;
+	 logic is_food_eaten, is_food, is_food_big_no_color, is_score_all_letters;
 	 logic [9:0] DrawX, DrawY;
 	 logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out;
 	 logic led1, led2, led3, led4, led5, led6, inside_block;
@@ -160,7 +160,8 @@ module lab8( input               CLOCK_50,
 											.red_evil_data_out_R(red_evil_data_out[23:16]), .red_evil_data_out_G(red_evil_data_out[15:8]), .red_evil_data_out_B(red_evil_data_out[7:0]),
 											.green_evil_data_out_R(green_evil_data_out[23:16]), .green_evil_data_out_G(green_evil_data_out[15:8]), .green_evil_data_out_B(green_evil_data_out[7:0]),
 											.blue_evil_data_out_R(blue_evil_data_out[23:16]), .blue_evil_data_out_G(blue_evil_data_out[15:8]), .blue_evil_data_out_B(blue_evil_data_out[7:0]),
-											.is_food(is_food));
+											.is_food(is_food),
+											.text_data(text_data), .score_x(score_x), .is_score_all_letters(is_score_all_letters));
 											
 	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out));
 	 
@@ -171,8 +172,15 @@ module lab8( input               CLOCK_50,
 	 //green_evil green_evil_sprite(.Clk(Clk), .green_evil_read_address(green_evil_read_address), .green_evil_data_out(green_evil_data_out));
 		 
 	 //blue_evil blue_evil_sprite(.Clk(Clk), .blue_evil_read_address(blue_evil_read_address), .blue_evil_data_out(blue_evil_data_out));
-    	 
-    // Display keycode on hex display
+    
+	 font_rom font_rom(.addr(score_addr), .data(text_data));
+	 
+	 display_letters score(.DrawX(DrawX), .DrawY(DrawY), .is_score_all_letters(is_score_all_letters), .score_addr(score_addr), .score_x(score_x));
+    
+	 logic [10:0] score_addr, score_x;
+	 logic [7:0]  text_data;
+	 
+	 // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
     HexDriver hex_inst_1 (keycode[7:4], HEX1);
     
