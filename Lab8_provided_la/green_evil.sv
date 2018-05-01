@@ -36,8 +36,8 @@ module  green_evil_move ( input     Clk,                // 50 MHz clock
     assign Ball_X_Step_inv = (~(Ball_X_Step) + 1'b1);
     assign Ball_Y_Step_inv = (~(Ball_Y_Step) + 1'b1);
 	 
-	 assign Green_X_Pos_out = Ball_X_Pos;
-	 assign Green_Y_Pos_out = Ball_Y_Pos;
+	 assign Green_X_Pos_out = Ball_X_Pos_in;
+	 assign Green_Y_Pos_out = Ball_Y_Pos_in;
     
 	 //////// Do not modify the always_ff blocks. ////////
     // Detect rising edge of frame_clk

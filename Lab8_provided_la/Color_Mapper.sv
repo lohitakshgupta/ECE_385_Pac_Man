@@ -80,7 +80,7 @@ module  color_mapper ( input              is_ball, is_wall, is_red_evil, is_gree
             Blue = 8'hff;
         end
 		  
-		  else if ((is_score_all_letters == 1'b1 && text_data[DrawX - score_x] == 1'b1))// && is_ball != 1'b1) 
+		  else if ((is_score_all_letters == 1'b1 && text_data[score_x - DrawX] == 1'b1))// && is_ball != 1'b1) 
         begin
             // White Text
             Red = 8'hff;

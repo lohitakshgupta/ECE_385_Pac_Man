@@ -70,22 +70,25 @@ module lab8( input               CLOCK_50,
 	 logic [9:0] Blue_X_Pos_out, Blue_Y_Pos_out;
 	 logic [9:0] Red_X_Pos_out, Red_Y_Pos_out;
 	 logic [9:0] Green_X_Pos_out, Green_Y_Pos_out;
-	 logic led1, led2, led3, led4, led5, led6, inside_block, inside_block_blue, inside_block_red, inside_block_green;
+	 logic led1, led2, led3, led4, led5, led6, led7, led8, inside_block, inside_block_blue, inside_block_red, inside_block_green;
 	 logic [2:0] direction;
 	 
-	 assign LEDG[0] = is_wall_up;
-	 assign LEDG[1] = is_wall_down;
-	 assign LEDG[2] = is_wall_right;
-	 assign LEDG[3] = is_wall_left;
-	 assign LEDG[4] = led4;
-	 assign LEDG[5] = led2;
-	 assign LEDG[6] = led3;
-	 assign LEDG[7] = led1;
-	 assign LEDG[8] = inside_block;
+	 assign LEDG[0] = is_wall_up_blue;
+	 assign LEDG[1] = is_wall_down_blue;
+	 assign LEDG[2] = is_wall_right_blue;
+	 assign LEDG[3] = is_wall_left_blue;
+	 assign LEDG[4] = 1'b0; //led4;
+	 assign LEDG[5] = 1'b0; //led2;
+	 assign LEDG[6] = 1'b0; //led3;
+	 assign LEDG[7] = 1'b0; //led1;
+	 assign LEDG[8] = inside_block_blue;
 	 
-	 assign LEDR[0] = led5;
-	 assign LEDR[1] = led6;
-	 assign LEDR[4:2] = direction;
+	 assign LEDR[0] = 1'b0; //led8;
+	 assign LEDR[1] = 1'b0; //led6;
+	 assign LEDR[2] = 1'b0; //led7;
+	 assign LEDR[3] = 1'b0; //led5;
+	 assign LEDR[4] = 1'b0;
+	 assign LEDR[5] = 1'b0;
     
     // Interface between NIOS II and EZ-OTG chip
     hpi_io_intf hpi_io_inst(
@@ -146,7 +149,7 @@ module lab8( input               CLOCK_50,
     // Which signal should be frame_clk?
     pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall),
 							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
-							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .led1(led1), .led2(led2), .led3(led3), .led4(led4), .led5(led5), .led6(led6),
+							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten),
 							.direction(direction), .inside_block(inside_block),
 							.is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
     
@@ -160,7 +163,8 @@ module lab8( input               CLOCK_50,
 	 
 	 blue_evil_move blue_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .blue_evil_read_address(blue_evil_read_address), .is_blue_evil(is_blue_evil),
 											.is_wall_up_blue(is_wall_up_blue), .is_wall_down_blue(is_wall_down_blue), .is_wall_right_blue(is_wall_right_blue), .is_wall_left_blue(is_wall_left_blue),
-											.inside_block_blue(inside_block_blue), .Blue_X_Pos_out(Blue_X_Pos_out), .Blue_Y_Pos_out(Blue_Y_Pos_out));
+											.inside_block_blue(inside_block_blue), .Blue_X_Pos_out(Blue_X_Pos_out), .Blue_Y_Pos_out(Blue_Y_Pos_out),
+											.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out)/*, .led1(led1), .led2(led2), .led3(led3), .led4(led4), .led5(led5), .led6(led6), .led7(led7), .led8(led8)*/);
 	 
 	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall), .is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
 								.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out),

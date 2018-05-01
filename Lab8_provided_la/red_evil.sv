@@ -26,6 +26,8 @@ module  red_evil_move ( input     Clk,                // 50 MHz clock
     logic [9:0] Ball_X_Pos, Ball_X_Motion, Ball_Y_Pos, Ball_Y_Motion;
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
 	 
+	 logic [2:0] previous_direction, current_direction; 
+	 
     int DistX, DistY, Size;
     assign DistX = DrawX - Ball_X_Pos;
     assign DistY = DrawY - Ball_Y_Pos;
@@ -35,8 +37,8 @@ module  red_evil_move ( input     Clk,                // 50 MHz clock
     assign Ball_X_Step_inv = (~(Ball_X_Step) + 1'b1);
     assign Ball_Y_Step_inv = (~(Ball_Y_Step) + 1'b1);
 	 
-	 assign Red_X_Pos_out = Ball_X_Pos;
-	 assign Red_Y_Pos_out = Ball_Y_Pos;
+	 assign Red_X_Pos_out = Ball_X_Pos_in;
+	 assign Red_Y_Pos_out = Ball_Y_Pos_in;
     
 	 //////// Do not modify the always_ff blocks. ////////
     // Detect rising edge of frame_clk
@@ -55,6 +57,7 @@ module  red_evil_move ( input     Clk,                // 50 MHz clock
             Ball_Y_Pos <= Ball_Y_Center;
             Ball_X_Motion <= 10'd0;
             Ball_Y_Motion <= 10'd0;
+				current_direction <= 3'b111;
 				//flag <= 1'b0;
         end
         else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
@@ -63,6 +66,7 @@ module  red_evil_move ( input     Clk,                // 50 MHz clock
             Ball_Y_Pos <= Ball_Y_Pos_in;
             Ball_X_Motion <= Ball_X_Motion_in;
             Ball_Y_Motion <= Ball_Y_Motion_in;
+				current_direction <= previous_direction;
         end
         // By defualt, keep the register values.
     end
@@ -75,35 +79,125 @@ module  red_evil_move ( input     Clk,                // 50 MHz clock
         Ball_Y_Pos_in = Ball_Y_Pos + Ball_Y_Motion;
 		  Ball_X_Motion_in = Ball_X_Motion;
 		  Ball_Y_Motion_in = Ball_Y_Motion;
+		  previous_direction = current_direction;
 		  
-		 if((inside_block_red == 1'b1) && (is_wall_up_red != 1'b1)) begin    
-                Ball_X_Motion_in = 10'd0;
-                Ball_Y_Motion_in = Ball_Y_Step_inv;
-//					 previous_direction = 3'b011;
-//					 led4 = 1'b1;
-		   end
-			
-		else if((inside_block_red == 1'b1) && (is_wall_right_red != 1'b1))
-			 begin
-                Ball_X_Motion_in = Ball_X_Step;
-                Ball_Y_Motion_in = 10'd0;
-//					 previous_direction = 3'b010;
-//					 led3 = 1'b1;
-			 end
 		  
-		 else if((inside_block_red == 1'b1) && (is_wall_down_red != 1'b1)) begin
+		  if ((previous_direction == 3'b111) /*&& (inside_block_red == 1'b1)*/)
+		  begin
+					Ball_X_Motion_in = 10'd0;
+               Ball_Y_Motion_in = Ball_Y_Step_inv;
+					previous_direction = 3'b011;
+		  end
+		  
+		  else if ((previous_direction == 3'b001) && (inside_block_red == 1'b1))
+		  begin
+				if(is_wall_down_red != 1'b1) begin
                 Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
-//					 previous_direction = 3'b001;
-//					 led2 = 1'b1;
-          end
-			
-			else if((inside_block_red == 1'b1) && (is_wall_left_red != 1'b1)) begin			//GOLDEN!!!!
-                Ball_X_Motion_in = Ball_X_Step_inv;
+					 previous_direction = 3'b001;
+					 //led2 = 1'b1;
+				end
+				else if(is_wall_right_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b010;
+				end
+				else if (is_wall_left_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step_inv;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b000;
+				end
+		  end
+		  
+		  else if ((previous_direction == 3'b000) && (inside_block_red == 1'b1))
+		  begin
+				if (is_wall_left_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step_inv;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b000;
+				end
+				else if(is_wall_down_red != 1'b1) begin
+                Ball_X_Motion_in = 10'd0; 
+                Ball_Y_Motion_in = Ball_Y_Step;
+					 previous_direction = 3'b001;
+				end
+				else if (is_wall_up_red != 1'b1) begin
+					 Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+					 previous_direction = 3'b011;
+				end
+		  end
+		  
+		  else if ((previous_direction != 3'b010) && (inside_block_red == 1'b1))
+		  begin
+				if(is_wall_right_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b010;
+				end
+				else if (is_wall_up_red != 1'b1) begin
+					 Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+					 previous_direction = 3'b011;
+				end
+				else if(is_wall_down_red != 1'b1) begin
+                Ball_X_Motion_in = 10'd0; 
+                Ball_Y_Motion_in = Ball_Y_Step;
+					 previous_direction = 3'b001;
+				end
+		  end
+		  
+		  else if ((previous_direction != 3'b011) && (inside_block_red == 1'b1))
+		  begin
+				if (is_wall_up_red != 1'b1) begin
+					 Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+					 previous_direction = 3'b011;
+				end
+				else if (is_wall_left_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step_inv;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b000;
+				end
+				else if(is_wall_right_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b010;
+				end
+		  end
+		  
+//		 if((inside_block_red == 1'b1) && (is_wall_up_red != 1'b1) && (previous_direction != 3'b001)) begin    
+//                Ball_X_Motion_in = 10'd0;
+//                Ball_Y_Motion_in = Ball_Y_Step_inv;
+//					 previous_direction = 3'b011;
+//					 //led4 = 1'b1;
+//		   end
+//			
+//		else if((inside_block_red == 1'b1) && (is_wall_right_red != 1'b1) && (previous_direction != 3'b000))
+//			 begin
+//                Ball_X_Motion_in = Ball_X_Step;
+//                Ball_Y_Motion_in = 10'd0;
+//					 previous_direction = 3'b010;
+//					 //led3 = 1'b1;
+//			 end
+//		  
+//		  else if((inside_block_red == 1'b1) && (is_wall_left_red != 1'b1) && (previous_direction != 3'b010)) begin			//GOLDEN!!!!
+//                Ball_X_Motion_in = Ball_X_Step_inv;
+//                Ball_Y_Motion_in = 10'd0;
 //					 previous_direction = 3'b000;
-//					 led1 = 1'b1;
-         end
+//					 //led1 = 1'b1;
+//         end
+//			
+//		 else if((inside_block_red == 1'b1) && (is_wall_down_red != 1'b1) && (previous_direction != 3'b011)) begin
+//                Ball_X_Motion_in = 10'd0; 
+//                Ball_Y_Motion_in = Ball_Y_Step;
+//					 previous_direction = 3'b001;
+//					 //led2 = 1'b1;
+//          end
+			 
+			 
+			
+			
 
 		  
         // By default, keep motion unchanged

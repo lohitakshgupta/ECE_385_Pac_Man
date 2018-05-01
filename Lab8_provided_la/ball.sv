@@ -25,7 +25,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 					//output logic [9:0] pac_man_full_read_address,
                output logic  is_ball, is_food_eaten,            // Whether current pixel belongs to ball or background
 					output logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out,
-					output logic led1, led2, led3, led4, led5, led6,
+					//output logic led1, led2, led3, led4, led5, led6,
 					output logic [2:0] direction
 					);
     
@@ -54,8 +54,8 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 	 
 	 assign direction = current_direction;
 	 
-	 assign Ball_X_Pos_out = Ball_X_Pos;
-	 assign Ball_Y_Pos_out = Ball_Y_Pos;
+	 assign Ball_X_Pos_out = Ball_X_Pos_in;
+	 assign Ball_Y_Pos_out = Ball_Y_Pos_in;
 	 
   
 	 logic [9:0] Ball_X_Step_inv, Ball_Y_Step_inv;
@@ -128,12 +128,12 @@ module  pac_man ( input         Clk,                // 50 MHz clock
            * D - 0x07
            */
 			  
-          led1 = 1'b0;
-			 led2 = 1'b0;
-			 led3 = 1'b0;
-			 led4 = 1'b0;
-			 led5 = 1'b0;
-			 led6 = 1'b0;
+//        led1 = 1'b0;
+//			 led2 = 1'b0;
+//			 led3 = 1'b0;
+//			 led4 = 1'b0;
+//			 led5 = 1'b0;
+//			 led6 = 1'b0;
 			 		 
 			 //previous_direction = 3'b111;
 			 
@@ -141,26 +141,26 @@ module  pac_man ( input         Clk,                // 50 MHz clock
                 Ball_X_Motion_in = Ball_X_Step_inv;
                 Ball_Y_Motion_in = 10'd0;
 					 previous_direction = 3'b000;
-					 led1 = 1'b1;
+					 //led1 = 1'b1;
           end
           else if((key == 8'h16) && (is_wall_down != 1'b1)) begin
                 Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
 					 previous_direction = 3'b001;
-					 led2 = 1'b1;
+					 //led2 = 1'b1;
           end
           else if((key == 8'h07) && (is_wall_right != 1'b1))
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
 					 previous_direction = 3'b010;
-					 led3 = 1'b1;
+					 //led3 = 1'b1;
 			 end
 			 else if((key == 8'h1A) && (is_wall_up != 1'b1)) begin    
                 Ball_X_Motion_in = 10'd0;
                 Ball_Y_Motion_in = Ball_Y_Step_inv;
 					 previous_direction = 3'b011;
-					 led4 = 1'b1;
+					 //led4 = 1'b1;
           end
 //			 else begin
 //					previous_direction = 3'b111;
@@ -171,12 +171,12 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 			   if(((previous_direction == 3'b000) && (is_wall_left == 1'b1)) || ((previous_direction == 3'b010) && (is_wall_right == 1'b1)))
 				begin
 					Ball_X_Motion_in = 10'd0;
-					led5 = 1'b1;
+					//led5 = 1'b1;
 				end
 			  else if(((previous_direction == 3'b011) && (is_wall_up == 1'b1)) || ((previous_direction == 3'b001) && (is_wall_down == 1'b1)))
 				begin
 					Ball_Y_Motion_in = 10'd0;
-					led6 = 1'b1;
+					//led6 = 1'b1;
 				end
 			 end
 //        if((key == 8'h1A) && (is_wall_up != 1'b1)) begin         //old golden

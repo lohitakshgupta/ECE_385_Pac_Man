@@ -5,11 +5,12 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
 									  inside_block_blue,
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                input [7:0]   key,               // The currently pressed keys
+					input [9:0]	  Ball_X_Pos_out, Ball_Y_Pos_out,
 					output logic [9:0] blue_evil_read_address,
 					output logic [9:0] Blue_X_Pos_out, Blue_Y_Pos_out,
 					//output logic [9:0] pac_man_full_read_address,
                output logic  is_blue_evil             // Whether current pixel belongs to ball or background
-//					output logic led1, led2, led3, led4, 
+					//output logic led1, led2, led3, led4, led5, led6, led7, led8
 //					output logic [2:0] direction
               );
     
@@ -27,8 +28,13 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
      
     logic [9:0] Ball_X_Pos, Ball_X_Motion, Ball_Y_Pos, Ball_Y_Motion;
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
+	 logic is_collision;
 	 
-	 logic [2:0] previous_direction, current_direction; 
+//	 logic [2:0] previous_direction, current_direction; 
+
+	 int Diff_X, Diff_Y, Diff_X_abs, Diff_Y_abs;
+	 assign Diff_X = Blue_X_Pos_out - Ball_X_Pos_out;
+	 assign Diff_Y = Blue_Y_Pos_out - Ball_Y_Pos_out;
 	 
     int DistX, DistY, Size;
     assign DistX = DrawX - Ball_X_Pos;
@@ -39,8 +45,8 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
     assign Ball_X_Step_inv = (~(Ball_X_Step) + 1'b1);
     assign Ball_Y_Step_inv = (~(Ball_Y_Step) + 1'b1);
 	 
-	 assign Blue_X_Pos_out = Ball_X_Pos;
-	 assign Blue_Y_Pos_out = Ball_Y_Pos;
+	 assign Blue_X_Pos_out = Ball_X_Pos_in;
+	 assign Blue_Y_Pos_out = Ball_Y_Pos_in;
     
 	 //////// Do not modify the always_ff blocks. ////////
     // Detect rising edge of frame_clk
@@ -59,7 +65,7 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
             Ball_Y_Pos <= Ball_Y_Center;
             Ball_X_Motion <= 10'd0;
             Ball_Y_Motion <= 10'd0;
-				current_direction <=3'b111;
+//				current_direction <=3'b111;
 				//flag <= 1'b0;
         end
         else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
@@ -68,7 +74,7 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
             Ball_Y_Pos <= Ball_Y_Pos_in;
             Ball_X_Motion <= Ball_X_Motion_in;
             Ball_Y_Motion <= Ball_Y_Motion_in;
-				current_direction <= previous_direction;
+//				current_direction <= previous_direction;
         end
         // By defualt, keep the register values.
     end
@@ -81,38 +87,115 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
         Ball_Y_Pos_in = Ball_Y_Pos + Ball_Y_Motion;
 		  Ball_X_Motion_in = Ball_X_Motion;
 		  Ball_Y_Motion_in = Ball_Y_Motion;
-		  previous_direction = current_direction;
+//		  previous_direction = current_direction;
 		  
 //			 led1 = 1'b0;
 //			 led2 = 1'b0;
 //			 led3 = 1'b0;
 //			 led4 = 1'b0;
+//			 led5 = 1'b0;
+//			 led6 = 1'b0;
+//			 led7 = 1'b0;
+//			 led8 = 1'b0;
+			 
+			 is_collision = 1'b0;
+			 Diff_X_abs = Diff_X;
+			 Diff_Y_abs = Diff_Y;
+			 
+			 if (Diff_X < 0)
+				Diff_X_abs = Diff_X * (-1);
+			 if (Diff_Y < 0)
+				Diff_Y_abs = Diff_Y * (-1);
+
+		  if ((Diff_X == 0) && (Diff_Y == 0))
+		  begin
+				is_collision = 1'b1;
+		  end
 		  
-		  if((inside_block_blue == 1'b1) && (is_wall_up_blue != 1'b1) && (previous_direction != 3'b001)) begin    
-                Ball_X_Motion_in = 10'd0;
-                Ball_Y_Motion_in = Ball_Y_Step_inv;
-					 previous_direction = 3'b011;
-//					 led4 = 1'b1;
-		   end
-		  else if((inside_block_blue == 1'b1) && (is_wall_left_blue != 1'b1) && (previous_direction != 3'b010)) begin			//GOLDEN!!!!
-                Ball_X_Motion_in = Ball_X_Step_inv;
-                Ball_Y_Motion_in = 10'd0;
-					 previous_direction = 3'b000;
-//					 led1 = 1'b1;
-         end
-        else if((inside_block_blue == 1'b1) && (is_wall_down_blue != 1'b1) && (previous_direction != 3'b011)) begin
-                Ball_X_Motion_in = 10'd0; 
-                Ball_Y_Motion_in = Ball_Y_Step;
-					 previous_direction = 3'b001;
-//					 led2 = 1'b1;
-          end
-         else if((inside_block_blue == 1'b1) && (is_wall_right_blue != 1'b1) && (previous_direction = 3'b000))
+		  //else if( Diff_X_abs < Diff_Y_abs )
+		  //begin
+		   if((inside_block_blue == 1'b1) && (is_wall_right_blue != 1'b1) && (Diff_X < 0) /*&& (previous_direction = 3'b000)*/)
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
-					 previous_direction = 3'b010;
-//					 led3 = 1'b1;
+//					 previous_direction = 3'b010;
+					 //led3 = 1'b1;
 			 end
+			else if((inside_block_blue == 1'b1) && (is_wall_left_blue != 1'b1) && (Diff_X > 0)/*&& (previous_direction != 3'b010)*/) begin			//GOLDEN!!!!
+                Ball_X_Motion_in = Ball_X_Step_inv;
+                Ball_Y_Motion_in = 10'd0;
+//					 previous_direction = 3'b000;
+					 //led1 = 1'b1;
+          end
+		   else if((inside_block_blue == 1'b1) && (is_wall_down_blue != 1'b1) && (Diff_Y < 0)/*&& (previous_direction != 3'b011)*/) begin
+                Ball_X_Motion_in = 10'd0; 
+                Ball_Y_Motion_in = Ball_Y_Step;
+//					 previous_direction = 3'b001;
+      			 //led2 = 1'b1;
+          end
+		   else if((inside_block_blue == 1'b1) && (is_wall_up_blue != 1'b1)  && (Diff_Y > 0)/*&& (previous_direction != 3'b001)*/) begin    
+                Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+//					 previous_direction = 3'b011;
+					 //led4 = 1'b1;
+		   end
+			
+			else if((inside_block_blue == 1'b1) && (is_wall_up_blue != 1'b1)  /*&& (previous_direction != 3'b001)*/) begin    
+                Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+//					 previous_direction = 3'b011;
+					 //led4 = 1'b1;
+		   end
+			else if((inside_block_blue == 1'b1) && (is_wall_down_blue != 1'b1) /*&& (previous_direction != 3'b011)*/) begin
+                Ball_X_Motion_in = 10'd0; 
+                Ball_Y_Motion_in = Ball_Y_Step;
+//					 previous_direction = 3'b001;
+      			 //led2 = 1'b1;
+          end
+			else if((inside_block_blue == 1'b1) && (is_wall_right_blue != 1'b1) /*&& (previous_direction = 3'b000)*/)
+			 begin
+                Ball_X_Motion_in = Ball_X_Step;
+                Ball_Y_Motion_in = 10'd0;
+//					 previous_direction = 3'b010;
+					 //led3 = 1'b1;
+			 end
+			else if((inside_block_blue == 1'b1) && (is_wall_left_blue != 1'b1) /*&& (previous_direction != 3'b010)*/) begin			//GOLDEN!!!!
+                Ball_X_Motion_in = Ball_X_Step_inv;
+                Ball_Y_Motion_in = 10'd0;
+//					 previous_direction = 3'b000;
+					 //led1 = 1'b1;
+          end
+		   
+		  //end
+		  
+//		  else if ( Diff_X_abs > Diff_Y_abs )
+//		  begin
+//		   if((inside_block_blue == 1'b1) && (is_wall_down_blue != 1'b1) && (Diff_Y < 0)/*&& (previous_direction != 3'b011)*/) begin
+//                Ball_X_Motion_in = 10'd0; 
+//                Ball_Y_Motion_in = Ball_Y_Step;
+////					 previous_direction = 3'b001;
+//    			    led6 = 1'b1;
+//          end
+//		   else if((inside_block_blue == 1'b1) && (is_wall_up_blue != 1'b1)  && (Diff_Y > 0)/*&& (previous_direction != 3'b001)*/) begin    
+//                Ball_X_Motion_in = 10'd0;
+//                Ball_Y_Motion_in = Ball_Y_Step_inv;
+////					 previous_direction = 3'b011;
+//					 led8 = 1'b1;
+//		   end
+//			else if((inside_block_blue == 1'b1) && (is_wall_right_blue != 1'b1) && (Diff_X < 0) /*&& (previous_direction = 3'b000)*/)
+//			 begin
+//                Ball_X_Motion_in = Ball_X_Step;
+//                Ball_Y_Motion_in = 10'd0;
+////					 previous_direction = 3'b010;
+//					 led7 = 1'b1;
+//			 end
+//			else if((inside_block_blue == 1'b1) && (is_wall_left_blue != 1'b1) && (Diff_X > 0)/*&& (previous_direction != 3'b010)*/) begin			//GOLDEN!!!!
+//                Ball_X_Motion_in = Ball_X_Step_inv;
+//                Ball_Y_Motion_in = 10'd0;
+////					 previous_direction = 3'b000;
+//   				 led5 = 1'b1;
+//          end
+//		   end
 		  
         // By default, keep motion unchanged
 			/*if(flag == 1'b1)
@@ -175,6 +258,6 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
             is_blue_evil = 1'b0;
         end      
    end
-    
+	 
 endmodule
 
