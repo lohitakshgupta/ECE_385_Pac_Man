@@ -128,41 +128,41 @@ module  red_evil_move ( input     Clk,                // 50 MHz clock
 				end
 		  end
 		  
-		  else if ((previous_direction != 3'b010) && (inside_block_red == 1'b1))
+		  else if ((previous_direction == 3'b010) && (inside_block_red == 1'b1))
 		  begin
 				if(is_wall_right_red != 1'b1) begin
 					 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
 					 previous_direction = 3'b010;
 				end
-				else if (is_wall_up_red != 1'b1) begin
-					 Ball_X_Motion_in = 10'd0;
-                Ball_Y_Motion_in = Ball_Y_Step_inv;
-					 previous_direction = 3'b011;
-				end
 				else if(is_wall_down_red != 1'b1) begin
                 Ball_X_Motion_in = 10'd0; 
                 Ball_Y_Motion_in = Ball_Y_Step;
 					 previous_direction = 3'b001;
 				end
+				else if (is_wall_up_red != 1'b1) begin
+					 Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = Ball_Y_Step_inv;
+					 previous_direction = 3'b011;
+				end
 		  end
 		  
-		  else if ((previous_direction != 3'b011) && (inside_block_red == 1'b1))
+		  else if ((previous_direction == 3'b011) && (inside_block_red == 1'b1))
 		  begin
 				if (is_wall_up_red != 1'b1) begin
 					 Ball_X_Motion_in = 10'd0;
                 Ball_Y_Motion_in = Ball_Y_Step_inv;
 					 previous_direction = 3'b011;
 				end
-				else if (is_wall_left_red != 1'b1) begin
-					 Ball_X_Motion_in = Ball_X_Step_inv;
-                Ball_Y_Motion_in = 10'd0;
-					 previous_direction = 3'b000;
-				end
 				else if(is_wall_right_red != 1'b1) begin
 					 Ball_X_Motion_in = Ball_X_Step;
                 Ball_Y_Motion_in = 10'd0;
 					 previous_direction = 3'b010;
+				end
+				else if (is_wall_left_red != 1'b1) begin
+					 Ball_X_Motion_in = Ball_X_Step_inv;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b000;
 				end
 		  end
 		  
