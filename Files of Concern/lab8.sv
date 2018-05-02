@@ -72,16 +72,17 @@ module lab8( input               CLOCK_50,
 	 logic [9:0] Green_X_Pos_out, Green_Y_Pos_out;
 	 logic led1, led2, led3, led4, led5, led6, led7, led8, inside_block, inside_block_blue, inside_block_red, inside_block_green;
 	 logic [2:0] direction;
+	 logic is_collision_red, is_collision_green, is_collision_blue;
 	 
-	 assign LEDG[0] = is_wall_up_blue;
-	 assign LEDG[1] = is_wall_down_blue;
-	 assign LEDG[2] = is_wall_right_blue;
-	 assign LEDG[3] = is_wall_left_blue;
+	 assign LEDG[0] = is_collision_red;
+	 assign LEDG[1] = is_collision_blue;
+	 assign LEDG[2] = is_collision_green;
+	 assign LEDG[3] = 1'b0;
 	 assign LEDG[4] = 1'b0; //led4;
 	 assign LEDG[5] = 1'b0; //led2;
 	 assign LEDG[6] = 1'b0; //led3;
 	 assign LEDG[7] = 1'b0; //led1;
-	 assign LEDG[8] = inside_block_blue;
+	 assign LEDG[8] = 1'b0;
 	 
 	 assign LEDR[0] = 1'b0; //led8;
 	 assign LEDR[1] = 1'b0; //led6;
@@ -150,21 +151,24 @@ module lab8( input               CLOCK_50,
     pac_man pac_man(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .pac_man_cut_read_address(pac_man_cut_read_address), .is_ball(is_ball), .is_wall(is_wall),
 							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
 							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten),
-							.direction(direction), .inside_block(inside_block),
+							.direction(direction), .inside_block(inside_block),.is_collision_blue(is_collision_blue), .is_collision_red(is_collision_red), .is_collision_green(is_collision_green),
 							.is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
     
 	 red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), 
 										  .is_wall_up_red(is_wall_up_red), .is_wall_down_red(is_wall_down_red), .is_wall_right_red(is_wall_right_red), .is_wall_left_red(is_wall_left_red),
-										  .inside_block_red(inside_block_red), .Red_X_Pos_out(Red_X_Pos_out), .Red_Y_Pos_out(Red_Y_Pos_out));
+										  .inside_block_red(inside_block_red), .Red_X_Pos_out(Red_X_Pos_out), .Red_Y_Pos_out(Red_Y_Pos_out), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out),
+										  .is_collision_blue(is_collision_blue), .is_collision_red(is_collision_red), .is_collision_green(is_collision_green));
 
 	 green_evil_move green_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .green_evil_read_address(green_evil_read_address), .is_green_evil(is_green_evil),
 												.is_wall_up_green(is_wall_up_green), .is_wall_down_green(is_wall_down_green), .is_wall_right_green(is_wall_right_green), .is_wall_left_green(is_wall_left_green),
-												.inside_block_green(inside_block_green), .Green_X_Pos_out(Green_X_Pos_out), .Green_Y_Pos_out(Green_Y_Pos_out));
+												.inside_block_green(inside_block_green), .Green_X_Pos_out(Green_X_Pos_out), .Green_Y_Pos_out(Green_Y_Pos_out),
+												.is_collision_blue(is_collision_blue), .is_collision_red(is_collision_red), .is_collision_green(is_collision_green), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out));
 	 
 	 blue_evil_move blue_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .blue_evil_read_address(blue_evil_read_address), .is_blue_evil(is_blue_evil),
 											.is_wall_up_blue(is_wall_up_blue), .is_wall_down_blue(is_wall_down_blue), .is_wall_right_blue(is_wall_right_blue), .is_wall_left_blue(is_wall_left_blue),
 											.inside_block_blue(inside_block_blue), .Blue_X_Pos_out(Blue_X_Pos_out), .Blue_Y_Pos_out(Blue_Y_Pos_out),
-											.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out)/*, .led1(led1), .led2(led2), .led3(led3), .led4(led4), .led5(led5), .led6(led6), .led7(led7), .led8(led8)*/);
+											.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), /*, .led1(led1), .led2(led2), .led3(led3), .led4(led4), .led5(led5), .led6(led6), .led7(led7), .led8(led8)*/
+											.is_collision_blue(is_collision_blue), .is_collision_red(is_collision_red), .is_collision_green(is_collision_green));
 	 
 	 wall wall_instance(.Clk(Clk), .DrawX(DrawX), .DrawY(DrawY), .is_wall(is_wall), .is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
 								.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out),

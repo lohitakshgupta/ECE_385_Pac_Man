@@ -3,15 +3,17 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
                              frame_clk,          // The clock indicating a new frame (~60Hz)
 									  is_wall_up_blue, is_wall_down_blue, is_wall_right_blue, is_wall_left_blue,
 									  inside_block_blue,
+									  is_collision_green, is_collision_red,
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                input [7:0]   key,               // The currently pressed keys
 					input [9:0]	  Ball_X_Pos_out, Ball_Y_Pos_out,
 					output logic [9:0] blue_evil_read_address,
 					output logic [9:0] Blue_X_Pos_out, Blue_Y_Pos_out,
 					//output logic [9:0] pac_man_full_read_address,
-               output logic  is_blue_evil             // Whether current pixel belongs to ball or background
+               output logic  is_blue_evil,             // Whether current pixel belongs to ball or background
 					//output logic led1, led2, led3, led4, led5, led6, led7, led8
 //					output logic [2:0] direction
+					output logic  is_collision_blue
               );
     
     parameter [9:0] Ball_X_Center= 320 - 16 + 16;  // Center position on the X axis
@@ -28,7 +30,6 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
      
     logic [9:0] Ball_X_Pos, Ball_X_Motion, Ball_Y_Pos, Ball_Y_Motion;
     logic [9:0] Ball_X_Pos_in, Ball_X_Motion_in, Ball_Y_Pos_in, Ball_Y_Motion_in;
-	 logic is_collision;
 	 
 //	 logic [2:0] previous_direction, current_direction; 
 
@@ -68,6 +69,14 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
 //				current_direction <=3'b111;
 				//flag <= 1'b0;
         end
+		  else if ((is_collision_green == 1'b1) || (is_collision_red == 1'b1))        
+        begin
+            Ball_X_Pos <= Ball_X_Pos_in;
+            Ball_Y_Pos <= Ball_Y_Pos_in;
+            Ball_X_Motion <= 10'd0;
+            Ball_Y_Motion <= 10'd0;
+//				current_direction <= previous_direction;
+        end
         else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
         begin
             Ball_X_Pos <= Ball_X_Pos_in;
@@ -98,7 +107,7 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
 //			 led7 = 1'b0;
 //			 led8 = 1'b0;
 			 
-			 is_collision = 1'b0;
+			 is_collision_blue = 1'b0;
 			 Diff_X_abs = Diff_X;
 			 Diff_Y_abs = Diff_Y;
 			 
@@ -107,13 +116,15 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
 			 if (Diff_Y < 0)
 				Diff_Y_abs = Diff_Y * (-1);
 
-		  if ((Diff_X == 0) && (Diff_Y == 0))
+		  if (((Diff_X == 0) && (Diff_Y == 0)) || ((Diff_X < 7) && (Diff_Y < 7) && (Diff_X > -7) && (Diff_Y > -7)) /*|| (is_collision_green == 1'b1) || (is_collision_red == 1'b1)*/)
 		  begin
-				is_collision = 1'b1;
+				is_collision_blue = 1'b1;
+				Ball_X_Motion_in = 10'd0;
+				Ball_Y_Motion_in = 10'd0;
 		  end
 		  
-		  //else if( Diff_X_abs < Diff_Y_abs )
-		  //begin
+		  else
+		  begin
 		   if((inside_block_blue == 1'b1) && (is_wall_right_blue != 1'b1) && (Diff_X < 0) /*&& (previous_direction = 3'b000)*/)
 			 begin
                 Ball_X_Motion_in = Ball_X_Step;
@@ -166,7 +177,7 @@ module  blue_evil_move ( input     Clk,                // 50 MHz clock
 					 //led1 = 1'b1;
           end
 		   
-		  //end
+		  end
 		  
 //		  else if ( Diff_X_abs > Diff_Y_abs )
 //		  begin

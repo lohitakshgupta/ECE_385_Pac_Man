@@ -21,6 +21,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 									  is_food, is_food_big_no_color, inside_block,
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
                input [7:0]   key,               // The currently pressed keys
+					input 		  is_collision_red, is_collision_blue, is_collision_green,
 					output logic [9:0] pac_man_cut_read_address,
 					//output logic [9:0] pac_man_full_read_address,
                output logic  is_ball, is_food_eaten,            // Whether current pixel belongs to ball or background
@@ -136,7 +137,16 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 //			 led6 = 1'b0;
 			 		 
 			 //previous_direction = 3'b111;
+			
+			if ((is_collision_red == 1'b1) || (is_collision_blue == 1'b1) || (is_collision_green == 1'b1)) 
+			begin
+					 Ball_X_Motion_in = 10'd0;
+                Ball_Y_Motion_in = 10'd0;
+					 previous_direction = 3'b111;
+			end
 			 
+			else
+			begin
           if((key == 8'h04) && (is_wall_left != 1'b1)) begin			//GOLDEN!!!!
                 Ball_X_Motion_in = Ball_X_Step_inv;
                 Ball_Y_Motion_in = 10'd0;
@@ -179,6 +189,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 					//led6 = 1'b1;
 				end
 			 end
+			end
 //        if((key == 8'h1A) && (is_wall_up != 1'b1)) begin         //old golden
 //                Ball_X_Motion_in = 10'd0;
 //                Ball_Y_Motion_in = Ball_Y_Step_inv;
