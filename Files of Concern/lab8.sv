@@ -137,7 +137,7 @@ module lab8( input               CLOCK_50,
     );
     
 	 logic [23:0] pac_man_cut_data_out, red_evil_data_out, green_evil_data_out, blue_evil_data_out;
-	 logic [9:0]  pac_man_cut_read_address, red_evil_read_address, green_evil_read_address, blue_evil_read_address;
+	 logic [9:0]  pac_man_cut_read_address, red_evil_read_address, green_evil_read_address, blue_evil_read_address, pac_man_full_read_address_special;
 	 
     // Use PLL to generate the 25MHZ VGA_CLK.
     // You will have to generate it on your own in simulation.
@@ -152,7 +152,7 @@ module lab8( input               CLOCK_50,
 							.is_wall_up(is_wall_up), .is_wall_down(is_wall_down), .is_wall_right(is_wall_right), .is_wall_left(is_wall_left),
 							.Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten),
 							.direction(direction), .inside_block(inside_block),.is_collision_blue(is_collision_blue), .is_collision_red(is_collision_red), .is_collision_green(is_collision_green),
-							.is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
+							.is_food(is_food), .is_food_big_no_color(is_food_big_no_color), .pac_man_full_read_address_special(pac_man_full_read_address_special));
     
 	 red_evil_move red_evil_move(.Clk(Clk), .Reset(Reset_h), .key(keycode), .frame_clk(VGA_VS), .DrawX(DrawX), .DrawY(DrawY), .red_evil_read_address(red_evil_read_address), .is_red_evil(is_red_evil), 
 										  .is_wall_up_red(is_wall_up_red), .is_wall_down_red(is_wall_down_red), .is_wall_right_red(is_wall_right_red), .is_wall_left_red(is_wall_left_red),
@@ -191,7 +191,7 @@ module lab8( input               CLOCK_50,
 											.is_food(is_food),
 											.text_data(text_data), .score_x(score_x), .is_score_all_letters(is_score_all_letters));
 											
-	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out));
+	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out), .direction(direction), .pac_man_full_read_address_special(pac_man_full_read_address_special));
 	 
 	 food food_display(.Clk(Clk), .Reset(Reset_h), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
  	 
