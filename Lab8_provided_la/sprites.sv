@@ -12,16 +12,16 @@ module  pac_man_cut
 // mem has width of 3 bits and a total of 400 addresses
 logic [23:0] pac_man_left_mem [0:675];
 logic [23:0] pac_man_down_mem [0:675];
-logic [23:0] pac_man_right_mem [0:675];
-logic [23:0] pac_man_up_mem [0:675];
+//logic [23:0] pac_man_right_mem [0:675];
+//logic [23:0] pac_man_up_mem [0:675];
 logic [23:0] pac_man_f_mem [0:675];
 
 initial
 begin
 	 $readmemh("sprite_bytes/pac_man_left.txt", pac_man_left_mem);
 	 $readmemh("sprite_bytes/pac_man_down.txt", pac_man_down_mem);
-	 $readmemh("sprite_bytes/pac_man_left.txt", pac_man_right_mem);
-	 $readmemh("sprite_bytes/pac_man_up.txt", pac_man_up_mem);
+//	 $readmemh("sprite_bytes/pac_man_left.txt", pac_man_right_mem);
+//	 $readmemh("sprite_bytes/pac_man_up.txt", pac_man_up_mem);
 	 $readmemh("sprite_bytes/pac_man_f.txt", pac_man_f_mem);
 end
 
@@ -36,10 +36,10 @@ always_ff @ (posedge Clk) begin
 		pac_man_cut_data_out<= pac_man_down_mem[pac_man_cut_read_address];
 	end
 	else if(direction == 3'b010) begin
-		pac_man_cut_data_out<= pac_man_right_mem[pac_man_full_read_address_special];
+		pac_man_cut_data_out<= pac_man_left_mem[pac_man_full_read_address_special];
 	end
 	else if(direction == 3'b011) begin
-		pac_man_cut_data_out<= pac_man_up_mem[pac_man_cut_read_address];
+		pac_man_cut_data_out<= pac_man_down_mem[pac_man_full_read_address_special];
 	end
 	else begin
 		pac_man_cut_data_out<= pac_man_f_mem[pac_man_cut_read_address];

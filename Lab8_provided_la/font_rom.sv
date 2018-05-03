@@ -1,5 +1,7 @@
 module font_rom ( input [10:0]	addr,
-						output [7:0]	data
+						input is_zoom,
+						output [7:0]	data,
+						output [15:0] data_16
 					 );
 
 	parameter ADDR_WIDTH = 11;
@@ -2187,5 +2189,14 @@ module font_rom ( input [10:0]	addr,
         };
 
 	assign data = ROM[addr];
+	
+//	always_comb begin
+//	if(is_zoom == 1'b1) begin
+//		data_16 = {data[0],data[0],data[1],data[1],data[2],data[2],data[3],data[3],data[4],data[4],data[5],data[5],data[6],data[6],data[7],data[7]};
+//	end
+//	else begin
+//		data_16 = 16'b0000000000000000;
+//	end
+//	end
 
 endmodule  

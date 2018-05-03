@@ -15,7 +15,7 @@
 
 module lab8( input               CLOCK_50,
              input        [3:0]  KEY,          //bit 0 is set up as Reset
-             output logic [6:0]  HEX0, HEX1,
+             output logic [6:0]  HEX0, HEX1,HEX2,HEX3,
 				 output logic [8:0]  LEDG,
 				 output logic [5:0]  LEDR, 
              // VGA Interface 
@@ -64,7 +64,7 @@ module lab8( input               CLOCK_50,
 	 logic is_wall_up_red, is_wall_down_red, is_wall_right_red, is_wall_left_red;
 	 logic is_wall_up_green, is_wall_down_green, is_wall_right_green, is_wall_left_green;
 	 logic is_red_evil, is_green_evil, is_blue_evil;
-	 logic is_food_eaten, is_food, is_food_big_no_color, is_score_all_letters;
+	 logic is_food_eaten, is_food, is_food_big_no_color, is_score_all_letters, is_zoom;
 	 logic [9:0] DrawX, DrawY;
 	 logic [9:0] Ball_X_Pos_out, Ball_Y_Pos_out;
 	 logic [9:0] Blue_X_Pos_out, Blue_Y_Pos_out;
@@ -188,12 +188,13 @@ module lab8( input               CLOCK_50,
 											.red_evil_data_out_R(red_evil_data_out[23:16]), .red_evil_data_out_G(red_evil_data_out[15:8]), .red_evil_data_out_B(red_evil_data_out[7:0]),
 											.green_evil_data_out_R(green_evil_data_out[23:16]), .green_evil_data_out_G(green_evil_data_out[15:8]), .green_evil_data_out_B(green_evil_data_out[7:0]),
 											.blue_evil_data_out_R(blue_evil_data_out[23:16]), .blue_evil_data_out_G(blue_evil_data_out[15:8]), .blue_evil_data_out_B(blue_evil_data_out[7:0]),
-											.is_food(is_food),
-											.text_data(text_data), .score_x(score_x), .is_score_all_letters(is_score_all_letters));
+											.is_food(is_food), .data_16(data_16), .is_zoom(is_zoom),
+											.text_data(text_data), .score_x(score_x), .is_score_all_letters(is_score_all_letters),
+											.is_collision_blue(is_collision_blue), .is_collision_red(is_collision_red), .is_collision_green(is_collision_green), .is_game_over(is_game_over));
 											
 	 pac_man_cut pac_man_cut_sprite(.Clk(Clk), .pac_man_cut_read_address(pac_man_cut_read_address), .pac_man_cut_data_out(pac_man_cut_data_out), .direction(direction), .pac_man_full_read_address_special(pac_man_full_read_address_special));
 	 
-	 food food_display(.Clk(Clk), .Reset(Reset_h), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color));
+	 food food_display(.Clk(Clk), .Reset(Reset_h), .DrawX(DrawX), .DrawY(DrawY), .Ball_X_Pos_out(Ball_X_Pos_out), .Ball_Y_Pos_out(Ball_Y_Pos_out), .is_food_eaten(is_food_eaten), .is_food(is_food), .is_food_big_no_color(is_food_big_no_color), .score_out(score_score));
  	 
 	 red_evil red_evil_sprite(.Clk(Clk), .red_evil_read_address(red_evil_read_address), .red_evil_data_out(red_evil_data_out));
 
@@ -201,15 +202,18 @@ module lab8( input               CLOCK_50,
 		 
 	 blue_evil blue_evil_sprite(.Clk(Clk), .blue_evil_read_address(blue_evil_read_address), .blue_evil_data_out(blue_evil_data_out));
     	 
-	 font_rom font_rom(.addr(score_addr), .data(text_data));
+	 font_rom font_rom(.addr(score_addr), .data(text_data), .is_zoom(is_zoom), .data_16(data_16));
 	 
-	 display_letters score(.DrawX(DrawX), .DrawY(DrawY), .is_score_all_letters(is_score_all_letters), .score_addr(score_addr), .score_x(score_x));
+	 display_letters score(.DrawX(DrawX), .DrawY(DrawY), .is_score_all_letters(is_score_all_letters), .score_addr(score_addr), .score_x(score_x), .is_zoom(is_zoom), .score(score_score), .is_game_over(is_game_over));
     
+	 logic [15:0] data_16;
 	 logic [10:0] score_addr, score_x;
-	 logic [7:0]  text_data;
+	 logic [7:0]  text_data, score_score;
 	 
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
     HexDriver hex_inst_1 (keycode[7:4], HEX1);
+	 HexDriver hex_inst_2 (score[3:0], HEX2);
+	 HexDriver hex_inst_3 (score[7:4], HEX3);
     
     /**************************************************************************************
         ATTENTION! Please answer the following quesiton in your lab report! Points will be allocated for the answers!

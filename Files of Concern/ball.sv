@@ -58,7 +58,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 	 assign Ball_X_Pos_out = Ball_X_Pos_in;
 	 assign Ball_Y_Pos_out = Ball_Y_Pos_in;
 	 
-  
+	 //logic [7:0] score_trial_previous, score_trial_current;
 	 logic [9:0] Ball_X_Step_inv, Ball_Y_Step_inv;
     assign Ball_X_Step_inv = (~(Ball_X_Step) + 1'b1);
     assign Ball_Y_Step_inv = (~(Ball_Y_Step) + 1'b1);
@@ -81,6 +81,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
             Ball_X_Motion <= 10'd0;
             Ball_Y_Motion <= 10'd0;
 				current_direction <=3'b111;
+				//score_trial_current <= 8'h00;
 				//flag <= 1'b0;
         end
         else if (frame_clk_rising_edge)        // Update only at rising edge of frame clock
@@ -90,6 +91,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
             Ball_X_Motion <= Ball_X_Motion_in;
             Ball_Y_Motion <= Ball_Y_Motion_in;
 				current_direction <= previous_direction;
+				//score_trial_current <= score_trial_previous;
         end
         // By defualt, keep the register values.
     end
@@ -103,6 +105,7 @@ module  pac_man ( input         Clk,                // 50 MHz clock
 		  Ball_X_Motion_in = Ball_X_Motion;
 		  Ball_Y_Motion_in = Ball_Y_Motion;
 		  previous_direction = current_direction;
+		  //score_trial_previous = score_trial_current;
         // By default, keep motion unchanged
 			/*if(flag == 1'b1)
 				begin
