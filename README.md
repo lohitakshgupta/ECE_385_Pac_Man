@@ -10,5 +10,5 @@ Note: Files of Concern folder contains the most relevant .sv files required for 
 https://github.com/lohitakshgupta/ECE_385_Pac_Man/blob/master/Final%20Project%20Report.pdf
 
 # Team Members
-Aditi Patange
-Lohitaksh Gupta
+Markup : * Aditi Patange
+         * Lohitaksh Gupta
